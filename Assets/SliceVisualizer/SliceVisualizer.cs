@@ -8,6 +8,7 @@ public class SliceVisualizer : MonoBehaviour {
 	public const string VOXEL_TEX = "_VoxelTex";
 	public const string UV_TO_NEAR = "_UVToNearPlaneMat";
 	public const string UV_TO_FAR = "_UVToFarPlaneMat";
+	public const string MODEL_MAT = "_ModelMat";
 
 	public int depth = 64;
 	public Camera frustumCam;
@@ -16,6 +17,7 @@ public class SliceVisualizer : MonoBehaviour {
 	int PROP_VOXEL_TEX;
 	int PROP_UV_TO_NEAR;
 	int PROP_UV_TO_FAR;
+	int PROP_MODEL_MAT;
 
 	[SerializeField]
 	Material sliceByPointMat;
@@ -27,6 +29,7 @@ public class SliceVisualizer : MonoBehaviour {
 		PROP_VOXEL_TEX = Shader.PropertyToID (VOXEL_TEX);
 		PROP_UV_TO_NEAR = Shader.PropertyToID (UV_TO_NEAR);
 		PROP_UV_TO_FAR = Shader.PropertyToID (UV_TO_FAR);
+		PROP_MODEL_MAT = Shader.PropertyToID (MODEL_MAT);
 	}
 	void OnRenderObject() {
 		if (!IsInitialized)
@@ -54,6 +57,7 @@ public class SliceVisualizer : MonoBehaviour {
 		sliceByPointMat.SetFloat (PROP_VERTEX_TO_DEPTH, 1f / (depth + 1f));
 		sliceByPointMat.SetMatrix (PROP_UV_TO_NEAR, uvToNearMat);
 		sliceByPointMat.SetMatrix (PROP_UV_TO_FAR, uvToFarMat);
+		sliceByPointMat.SetMatrix (PROP_MODEL_MAT, transform.localToWorldMatrix);
 		sliceByPointMat.SetTexture (PROP_VOXEL_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
 		Graphics.DrawProcedural (MeshTopology.Points, depth);

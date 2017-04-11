@@ -40,12 +40,12 @@ Shader "Unlit/SliceByPoint" {
 
 			float4x4 _UVToNearPlaneMat;
 			float4x4 _UVToFarPlaneMat;
-
+			float4x4 _ModelMat;
 
 			float4 UVWToWorldPosition(float3 uvw) {
 				float4 uv = float4(uvw.xy, 0, 1);
 				float3 localPos = lerp(mul(_UVToNearPlaneMat, uv), mul(_UVToFarPlaneMat, uv), uvw.z).xyz;
-				return float4(mul(unity_ObjectToWorld, float4(localPos, 1)).xyz, 1);
+				return float4(mul(_ModelMat, float4(localPos, 1)).xyz, 1);
 			}
 
 			gsin vert (appdata v) {
