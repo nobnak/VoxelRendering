@@ -13,12 +13,13 @@ public class FrustumVoxelizer : MonoBehaviour {
 	int PROP_VOXEL_SIZE;
 	int PROP_VOXEL_TEX;
 
+	public TextureEvent OnCreateVoxelTexture;
+
 	public int prefferedVoxelResolution = 512;
 	public FilterMode voxelFilterMode = FilterMode.Bilinear;
 
 	public ComputeShader clearCompute;
 	public Shader voxelShader;
-	public Material visualMat;
 
 	int currentResolusion;
 	Camera targetCam;
@@ -43,14 +44,6 @@ public class FrustumVoxelizer : MonoBehaviour {
 		Shader.SetGlobalTexture (PROP_VOXEL_TEX, voxelTex);
 		Render();
 	}
-	void OnRenderObject() {
-		var currCam = Camera.current;
-		if (currCam == targetCam || (currCam.cullingMask & (1 << gameObject.layer)) == 0)
-			return;
-
-		visualMat.SetPass (0);
-		Graphics.DrawProcedural (MeshTopology.Triangles, 6);
-	}
 	void OnDisable() {
 		Release (ref voxelTex);
 		ReleaseCameraTargetTexture ();
@@ -69,9 +62,13 @@ public class FrustumVoxelizer : MonoBehaviour {
 			voxelTex.filterMode = voxelFilterMode;
 			voxelTex.wrapMode = TextureWrapMode.Clamp;
 			voxelTex.Create ();
+			OnCreateVoxelTexture.Invoke (voxelTex);
 
 			ReleaseCameraTargetTexture ();
 			targetCam.targetTexture = RenderTexture.GetTemporary (currentResolusion, currentResolusion);
+			var mat = GL.GetGPUProjectionMatrix (targetCam.projectionMatrix, true);
+			Debug.LogFormat ("Projection Matrix:\n{0}", mat);
+
 		}
 	}
 	void Clear () {
