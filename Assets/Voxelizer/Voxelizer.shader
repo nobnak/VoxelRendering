@@ -44,7 +44,7 @@
 				fixed4 col = tex2D(_MainTex, i.uv);
 
 				float3 ndcPos = i.pos.xyz / i.pos.w;
-				float3 normalizedPos = float3(0.5 * (ndcPos.xy + 1.0), (UNITY_NEAR_CLIP_VALUE - ndcPos.z) / UNITY_NEAR_CLIP_VALUE);
+				float3 normalizedPos = float3(0.5 * (ndcPos.xy + 1.0), 1.0 - ndcPos.z);
 				normalizedPos.y = (_ProjectionParams.x > 0 ? normalizedPos.y : 1.0 - normalizedPos.y);
 
 				float3 pixelPos = _VoxelSize.xyz * normalizedPos;
