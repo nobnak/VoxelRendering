@@ -53,7 +53,6 @@ public class FrustumVoxelizer : MonoBehaviour {
 	void Init () {
 		currentResolusion = Mathf.Max (COMPUTE_CLEAR_THREADS, prefferedVoxelResolution).SmallestPowerOfTwoGreaterThan ();
 		if (voxelTex == null || voxelTex.width != currentResolusion) {
-			Debug.LogFormat ("Create Voxel Texture : Resolusion={0}", currentResolusion);
 			Release (ref voxelTex);
 			voxelTex = new RenderTexture (currentResolusion, currentResolusion, 0, RenderTextureFormat.ARGB32);
 			voxelTex.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
@@ -66,9 +65,6 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 			ReleaseCameraTargetTexture ();
 			targetCam.targetTexture = RenderTexture.GetTemporary (currentResolusion, currentResolusion);
-			var mat = GL.GetGPUProjectionMatrix (targetCam.projectionMatrix, true);
-			Debug.LogFormat ("Projection Matrix:\n{0}", mat);
-
 		}
 	}
 	void Clear () {
