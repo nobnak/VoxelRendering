@@ -4,8 +4,6 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 public class FrustumVoxelizer : MonoBehaviour {
-	public const int COMPUTE_CLEAR_THREADS = 8;
-
 	public const string RESULT = "Result";
 	public const string VOXEL_SIZE = "_VoxelSize";
 	public const string VOXEL_COLOR_TEX = "_VoxelColorTex";
@@ -16,6 +14,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 	int PROP_VOXEL_FACE_TEX;
 
 	public TextureEvent OnCreateVoxelTexture;
+	public TextureEvent OnCreateVoxelFaceTexture;
 
 	public int prefferedVoxelResolution = 512;
 	public FilterMode voxelFilterMode = FilterMode.Bilinear;
@@ -23,10 +22,10 @@ public class FrustumVoxelizer : MonoBehaviour {
 	public ComputeShader clearCompute;
 	public Shader voxelShader;
 
-	int currentResolusion;
 	Camera targetCam;
 	VoxelTexture colorTex;
 	VoxelTexture faceTex;
+	VoxelTextureCleaner cleaner;
 
 	#region Unity
 	void OnEnable() {
@@ -45,6 +44,13 @@ public class FrustumVoxelizer : MonoBehaviour {
 			CreateCameraTargetTexture();
 		};
 
+		faceTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.R8);
+		faceTex.OnCreateVoxelTexture += (VoxelTexture obj) => {
+			OnCreateVoxelFaceTexture.Invoke(obj.Texture);
+		};
+
+		cleaner = new VoxelTextureCleaner (clearCompute, 0, PROP_RESULT);
+
 		Init ();
 	}
 	void Update() {
@@ -52,6 +58,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 		Clear ();
 		Shader.SetGlobalVector (PROP_VOXEL_SIZE, colorTex.ResolutionVector);
 		Shader.SetGlobalTexture (PROP_VOXEL_COLOR_TEX, colorTex.Texture);
+		Shader.SetGlobalTexture (PROP_VOXEL_FACE_TEX, faceTex.Texture);
 		Render();
 	}
 	void OnDisable() {
@@ -61,12 +68,12 @@ public class FrustumVoxelizer : MonoBehaviour {
 	#endregion
 
 	void Init () {
-		colorTex.SetResolution(prefferedVoxelResolution);		
+		colorTex.SetResolution(prefferedVoxelResolution);
+		faceTex.SetResolution (prefferedVoxelResolution);
 	}
 	void Clear () {
-		var g = colorTex.CurrentResolution / COMPUTE_CLEAR_THREADS;
-		clearCompute.SetTexture (0, PROP_RESULT, colorTex.Texture);
-		clearCompute.Dispatch (0, g, g, g);
+		cleaner.Clear (colorTex.Texture);
+		cleaner.Clear (faceTex.Texture);
 	}
 	void Render () {
 		Graphics.SetRandomWriteTarget (1, colorTex.Texture);
