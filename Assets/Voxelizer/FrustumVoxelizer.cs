@@ -8,10 +8,12 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 	public const string RESULT = "Result";
 	public const string VOXEL_SIZE = "_VoxelSize";
-	public const string VOXEL_TEX = "_VoxelTex";
+	public const string VOXEL_COLOR_TEX = "_VoxelColorTex";
+	public const string VOXEL_FACE_TEX = "_VoxelFaceTex";
 	int PROP_RESULT;
 	int PROP_VOXEL_SIZE;
-	int PROP_VOXEL_TEX;
+	int PROP_VOXEL_COLOR_TEX;
+	int PROP_VOXEL_FACE_TEX;
 
 	public TextureEvent OnCreateVoxelTexture;
 
@@ -23,62 +25,53 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 	int currentResolusion;
 	Camera targetCam;
-	RenderTexture voxelTex;
+	VoxelTexture colorTex;
+	VoxelTexture faceTex;
 
 	#region Unity
-	void Awake () {
+	void OnEnable() {
 		PROP_RESULT = Shader.PropertyToID (RESULT);
 		PROP_VOXEL_SIZE = Shader.PropertyToID(VOXEL_SIZE);
-		PROP_VOXEL_TEX = Shader.PropertyToID(VOXEL_TEX);
-	}
-	void OnEnable() {
+		PROP_VOXEL_COLOR_TEX = Shader.PropertyToID(VOXEL_COLOR_TEX);
+		PROP_VOXEL_FACE_TEX = Shader.PropertyToID (VOXEL_FACE_TEX);
+
 		targetCam = GetComponent<Camera> ();
 		targetCam.enabled = false;
+
+		colorTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.ARGB32);
+		colorTex.OnCreateVoxelTexture += (v) => {
+			OnCreateVoxelTexture.Invoke(v.Texture);
+			ReleaseCameraTargetTexture();
+			CreateCameraTargetTexture();
+		};
 
 		Init ();
 	}
 	void Update() {
 		Init ();
 		Clear ();
-		Shader.SetGlobalVector (PROP_VOXEL_SIZE, VoxelSizeV4 ());
-		Shader.SetGlobalTexture (PROP_VOXEL_TEX, voxelTex);
+		Shader.SetGlobalVector (PROP_VOXEL_SIZE, colorTex.ResolutionVector);
+		Shader.SetGlobalTexture (PROP_VOXEL_COLOR_TEX, colorTex.Texture);
 		Render();
 	}
 	void OnDisable() {
-		Release (ref voxelTex);
+		colorTex.Dispose ();
 		ReleaseCameraTargetTexture ();
 	}
 	#endregion
 
 	void Init () {
-		currentResolusion = Mathf.Max (COMPUTE_CLEAR_THREADS, prefferedVoxelResolution).SmallestPowerOfTwoGreaterThan ();
-		if (voxelTex == null || voxelTex.width != currentResolusion) {
-			Release (ref voxelTex);
-			voxelTex = new RenderTexture (currentResolusion, currentResolusion, 0, RenderTextureFormat.ARGB32);
-			voxelTex.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
-			voxelTex.volumeDepth = currentResolusion;
-			voxelTex.enableRandomWrite = true;
-			voxelTex.filterMode = voxelFilterMode;
-			voxelTex.wrapMode = TextureWrapMode.Clamp;
-			voxelTex.Create ();
-			OnCreateVoxelTexture.Invoke (voxelTex);
-
-			ReleaseCameraTargetTexture ();
-			targetCam.targetTexture = RenderTexture.GetTemporary (currentResolusion, currentResolusion);
-		}
+		colorTex.SetResolution(prefferedVoxelResolution);		
 	}
 	void Clear () {
-		var g = voxelTex.width / COMPUTE_CLEAR_THREADS;
-		clearCompute.SetTexture (0, PROP_RESULT, voxelTex);
+		var g = colorTex.CurrentResolution / COMPUTE_CLEAR_THREADS;
+		clearCompute.SetTexture (0, PROP_RESULT, colorTex.Texture);
 		clearCompute.Dispatch (0, g, g, g);
 	}
 	void Render () {
-		Graphics.SetRandomWriteTarget (1, voxelTex);
+		Graphics.SetRandomWriteTarget (1, colorTex.Texture);
 		targetCam.RenderWithShader (voxelShader, null);
 		Graphics.ClearRandomWriteTargets ();
-	}
-	Vector4 VoxelSizeV4 () {
-		return new Vector4 (voxelTex.width, voxelTex.height, voxelTex.volumeDepth, 0f);
 	}
 	void Release<T>(ref T resource) where T : Object {
 		if (Application.isPlaying)
@@ -87,10 +80,13 @@ public class FrustumVoxelizer : MonoBehaviour {
 			Object.DestroyImmediate (resource);
 	}
 
-	void ReleaseCameraTargetTexture ()
-	{
+	void ReleaseCameraTargetTexture () {
 		var tex = targetCam.targetTexture;
 		targetCam.targetTexture = null;
 		RenderTexture.ReleaseTemporary (tex);
+	}
+	void CreateCameraTargetTexture() {
+		var w = colorTex.CurrentResolution;
+		targetCam.targetTexture = RenderTexture.GetTemporary (w, w, 0);
 	}
 }
