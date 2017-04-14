@@ -8,13 +8,12 @@ public class FrustumVoxelizer : MonoBehaviour {
 	public const string VOXEL_SIZE = "_VoxelSize";
 	public const string VOXEL_COLOR_TEX = "_VoxelColorTex";
 	public const string VOXEL_FACE_TEX = "_VoxelFaceTex";
-	int PROP_RESULT;
+
 	int PROP_VOXEL_SIZE;
 	int PROP_VOXEL_COLOR_TEX;
 	int PROP_VOXEL_FACE_TEX;
 
 	public TextureEvent OnCreateVoxelTexture;
-	public TextureEvent OnCreateVoxelFaceTexture;
 
 	public int prefferedVoxelResolution = 512;
 	public FilterMode voxelFilterMode = FilterMode.Bilinear;
@@ -29,7 +28,6 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 	#region Unity
 	void OnEnable() {
-		PROP_RESULT = Shader.PropertyToID (RESULT);
 		PROP_VOXEL_SIZE = Shader.PropertyToID(VOXEL_SIZE);
 		PROP_VOXEL_COLOR_TEX = Shader.PropertyToID(VOXEL_COLOR_TEX);
 		PROP_VOXEL_FACE_TEX = Shader.PropertyToID (VOXEL_FACE_TEX);
@@ -45,11 +43,8 @@ public class FrustumVoxelizer : MonoBehaviour {
 		};
 
 		faceTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.R8);
-		faceTex.OnCreateVoxelTexture += (VoxelTexture obj) => {
-			OnCreateVoxelFaceTexture.Invoke(obj.Texture);
-		};
 
-		cleaner = new VoxelTextureCleaner (clearCompute, 0, PROP_RESULT);
+        cleaner = new VoxelTextureCleaner (clearCompute, 0, RESULT);
 
 		Init ();
 	}
@@ -77,6 +72,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 	}
 	void Render () {
 		Graphics.SetRandomWriteTarget (1, colorTex.Texture);
+        Graphics.SetRandomWriteTarget (2, faceTex.Texture);
 		targetCam.RenderWithShader (voxelShader, null);
 		Graphics.ClearRandomWriteTargets ();
 	}

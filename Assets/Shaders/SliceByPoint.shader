@@ -1,14 +1,10 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-Shader "Unlit/SliceByPoint" {
+﻿Shader "Unlit/SliceByPoint" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_Cutout ("Cutout Threshold", Range(0,1)) = 0.5
 	}
 	SubShader {
-		//Tags { "RenderType"="Opaque" }
 		Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" "IgnoreProjector"="True" }
-		//Blend SrcAlpha OneMinusSrcAlpha
 		Cull Off ZWrite On ZTest LEqual
 
 		Pass {
@@ -18,7 +14,7 @@ Shader "Unlit/SliceByPoint" {
 			#pragma geometry geom
 			
 			#include "UnityCG.cginc"
-
+            #include "Voxel.cginc"
 			struct appdata {
 				uint vid : SV_VertexID;
 			};
