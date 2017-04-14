@@ -20,11 +20,13 @@
 
 			struct appdata {
 				float4 vertex : POSITION;
+				float3 normal : NORMAL;
 				float2 uv : TEXCOORD0;
 			};
 
 			struct v2f {
 				float4 vertex : SV_POSITION;
+				float3 normal : NORMAL;
 				float2 uv : TEXCOORD0;
 				float4 pos : TEXCOORD1;
 			};
@@ -35,6 +37,7 @@
 			v2f vert (appdata v) {
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.normal = v.normal;
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				o.pos = o.vertex;
 				return o;
@@ -49,8 +52,11 @@
 
 				float3 pixelPos = _VoxelSize.xyz * normalizedPos;
 				uint3 id = (uint3)floor(pixelPos);
-				//_VoxelTex[id] = float4(normalizedPos, 1.0);
-				_VoxelTex[id] = col;
+
+				float3 n = normalize(i.normal);
+
+				_VoxelColorTex[id] = col;
+				_VoxelFaceTex[id] = abs(dot(n, float3(0,0,1)));
 			}
 			ENDCG
 		}
