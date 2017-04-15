@@ -48,9 +48,7 @@
 				fixed4 col = tex2D(_MainTex, i.uv);
 				float3 n = normalize(i.normal);
 
-				_VoxelColorTex[id] = col;
-				_VoxelFaceTex[id] = abs(dot(n, float3(0,0,1)));
-
+				StoreResult(id, col, n);
 				return col;
 			}
 			ENDCG

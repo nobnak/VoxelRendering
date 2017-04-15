@@ -1,13 +1,9 @@
 ﻿#ifndef __VOXEL_INCLUDE__
 #define __VOXEL_INCLUDE__
 
-
-
 #define VOXEL_SIZE_VARIABLE _VoxelSize
 #define VOXEL_COLOR_TEX_VARIABLE _VoxelColorTex
 #define VOXEL_NORMAL_TEX_VARIABLE _VoxelFaceTex
-
-
 
 float4 VOXEL_SIZE_VARIABLE;
 
@@ -30,15 +26,28 @@ uint3 VoxelFromClipPosition(float4 clipPos) {
 
 
 
-
 #ifdef VOXEL_CREATOR
+
+
+
 RWTexture3D<float4> VOXEL_COLOR_TEX_VARIABLE : register(u1);
 RWTexture3D<float> VOXEL_NORMAL_TEX_VARIABLE : register(u2);
+
+void StoreResult(uint3 id, float4 resultColor, float3 resultNormal) {
+	VOXEL_COLOR_TEX_VARIABLE[id] = resultColor;
+	VOXEL_NORMAL_TEX_VARIABLE[id] = abs(dot(resultNormal, float3(0,0,1)));
+}
+
+
+
 #else
+
+
+
 sampler3D VOXEL_COLOR_TEX_VARIABLE;
 sampler3D VOXEL_NORMAL_TEX_VARIABLE;
+
+
+
 #endif
-
-
-
 #endif
