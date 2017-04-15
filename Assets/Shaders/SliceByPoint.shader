@@ -72,10 +72,10 @@
 			}
 
 			fixed4 frag (psin i) : SV_Target {
-				float4 c = tex3D(_VoxelTex, i.uv);
+				float4 c = tex3D(_VoxelTex, i.uv) * _Color;
                 float f = tex3D(VOXEL_NORMAL_TEX_VARIABLE, i.uv);
 				clip(c.a - _Cutout);
-				return f * _Color;
+				return f * c;
 			}
 			ENDCG
 		}
