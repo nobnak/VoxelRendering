@@ -43,20 +43,15 @@
 				return o;
 			}
 			
-			void frag (v2f i) {
+			float4 frag (v2f i) : COLOR {
+				uint3 id = VoxelFromClipPosition(i.pos);
 				fixed4 col = tex2D(_MainTex, i.uv);
-
-				float3 ndcPos = i.pos.xyz / i.pos.w;
-				float3 normalizedPos = float3(0.5 * (ndcPos.xy + 1.0), 1.0 - ndcPos.z);
-				normalizedPos.y = (_ProjectionParams.x > 0 ? normalizedPos.y : 1.0 - normalizedPos.y);
-
-				float3 pixelPos = _VoxelSize.xyz * normalizedPos;
-				uint3 id = (uint3)floor(pixelPos);
-
 				float3 n = normalize(i.normal);
 
 				_VoxelColorTex[id] = col;
 				_VoxelFaceTex[id] = abs(dot(n, float3(0,0,1)));
+
+				return col;
 			}
 			ENDCG
 		}
