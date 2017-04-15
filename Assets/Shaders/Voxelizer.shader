@@ -44,11 +44,10 @@
 			}
 			
 			float4 frag (v2f i) : COLOR {
-				uint3 id = VoxelFromClipPosition(i.pos);
 				fixed4 col = tex2D(_MainTex, i.uv);
 				float3 n = normalize(i.normal);
 
-				StoreResult(id, col, n);
+				StoreResultByClipPos(i.pos, col, n);
 				return col;
 			}
 			ENDCG
