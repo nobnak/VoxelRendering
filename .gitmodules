@@ -1,0 +1,3 @@
+[submodule "Assets/Packages/Gist"]
+	path = Assets/Packages/Gist
+	url = https://github.com/nobnak/Gist.git
