@@ -130,7 +130,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 342534502}
-  m_LocalRotation: {x: 0, y: 0.8406622, z: 0, w: 0.5415599}
+  m_LocalRotation: {x: 0, y: 0.6700403, z: 0, w: -0.7423247}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   depth: 256
-  frustumCam: {fileID: 1489461609}
+  frustumCam: {fileID: 0}
   sliceByPointMat: {fileID: 2100000, guid: df8c6dd39a0df5b47a5591602c0f3d88, type: 2}
 --- !u!4 &437114418
 Transform:
@@ -361,7 +361,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1489461610}
-  - component: {fileID: 1489461609}
   - component: {fileID: 1489461608}
   m_Layer: 0
   m_Name: Voxelize Camera
@@ -404,42 +403,6 @@ MonoBehaviour:
   voxelFilterMode: 1
   clearCompute: {fileID: 7200000, guid: 74afd4d0a63e22a41b57c5508f64788b, type: 3}
   voxelShader: {fileID: 4800000, guid: 69e55eca40ba0334ab4833f532d08ac0, type: 3}
---- !u!20 &1489461609
-Camera:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1489461607}
-  m_Enabled: 0
-  serializedVersion: 2
-  m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
-  m_NormalizedViewPortRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-  near clip plane: 0.3
-  far clip plane: 10
-  field of view: 60
-  orthographic: 1
-  orthographic size: 5
-  m_Depth: 0
-  m_CullingMask:
-    serializedVersion: 2
-    m_Bits: 256
-  m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
-  m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
-  m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
-  m_StereoConvergence: 10
-  m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!4 &1489461610
 Transform:
   m_ObjectHideFlags: 0
