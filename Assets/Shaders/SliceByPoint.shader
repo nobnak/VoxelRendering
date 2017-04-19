@@ -32,7 +32,6 @@
 			float _Cutout;
 
 			float _VertexToDepth;
-			sampler3D _VoxelTex;
 
 			float4x4 _UVToNearPlaneMat;
 			float4x4 _UVToFarPlaneMat;
@@ -72,7 +71,7 @@
 			}
 
 			fixed4 frag (psin i) : SV_Target {
-				float4 c = tex3D(_VoxelTex, i.uv) * _Color;
+				float4 c = tex3D(VOXEL_COLOR_TEX_VARIABLE, i.uv) * _Color;
                 float f = tex3D(VOXEL_NORMAL_TEX_VARIABLE, i.uv);
 				clip(c.a - _Cutout);
 				return f * c;

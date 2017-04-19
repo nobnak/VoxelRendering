@@ -4,45 +4,29 @@ using UnityEngine;
 
 [ExecuteInEditMode]
 public class SliceVisualizer : MonoBehaviour {
-	public const string VERTEX_TO_DEPTH = "_VertexToDepth";
-	public const string VOXEL_TEX = "_VoxelTex";
-	public const string UV_TO_NEAR = "_UVToNearPlaneMat";
-	public const string UV_TO_FAR = "_UVToFarPlaneMat";
-	public const string MODEL_MAT = "_ModelMat";
 
 	public int depth = 64;
-	public Camera frustumCam;
-
-	int PROP_VERTEX_TO_DEPTH;
-	int PROP_VOXEL_TEX;
-	int PROP_UV_TO_NEAR;
-	int PROP_UV_TO_FAR;
-	int PROP_MODEL_MAT;
 
 	[SerializeField]
 	Material sliceByPointMat;
 	Texture voxelTex;
+	AbstractVoxelBounds voxelBounds;
+	ShaderConstants shaderConstants;
 
 	#region Unity
 	void OnEnable() {
-		PROP_VERTEX_TO_DEPTH = Shader.PropertyToID (VERTEX_TO_DEPTH);
-		PROP_VOXEL_TEX = Shader.PropertyToID (VOXEL_TEX);
-		PROP_UV_TO_NEAR = Shader.PropertyToID (UV_TO_NEAR);
-		PROP_UV_TO_FAR = Shader.PropertyToID (UV_TO_FAR);
-		PROP_MODEL_MAT = Shader.PropertyToID (MODEL_MAT);
+		shaderConstants = ShaderConstants.Instance;
 	}
 	void OnRenderObject() {
 		if (!IsInitialized)
 			return;
-		
-		var nearPlane = frustumCam.nearClipPlane;
-		var farPlane = frustumCam.farClipPlane;
-		var nearBase = ViewportToLocalPosition (new Vector3 (0f, 0f, nearPlane));
-		var nearRight = ViewportToLocalPosition (new Vector3 (1f, 0f, nearPlane)) - nearBase;
-		var nearUp = ViewportToLocalPosition (new Vector3 (0f, 1f, nearPlane)) - nearBase;
-		var farBase = ViewportToLocalPosition (new Vector3 (0f, 0f, farPlane));
-		var farRight = ViewportToLocalPosition (new Vector3 (1f, 0f, farPlane)) - farBase;
-		var farUp = ViewportToLocalPosition (new Vector3 (0f, 1f, farPlane)) - farBase;
+
+		var nearBase = voxelBounds.NormalizedToLocalPosition (0f, 0f, 0f);
+		var nearRight = voxelBounds.NormalizedToLocalPosition (1f, 0f, 0f) - nearBase;
+		var nearUp = voxelBounds.NormalizedToLocalPosition (0f, 1f, 0f) - nearBase;
+		var farBase = voxelBounds.NormalizedToLocalPosition (0f, 0f, 1f);
+		var farRight = voxelBounds.NormalizedToLocalPosition (1f, 0f, 1f) - farBase;
+		var farUp =voxelBounds.NormalizedToLocalPosition  (0f, 1f, 1f) - farBase;
 
 		var uvToNearMat = Matrix4x4.zero;
 		uvToNearMat.SetColumn (0, nearRight);
@@ -54,24 +38,25 @@ public class SliceVisualizer : MonoBehaviour {
 		uvToFarMat.SetColumn (1, farUp);
 		uvToFarMat.SetColumn (3, farBase);
 
-		sliceByPointMat.SetFloat (PROP_VERTEX_TO_DEPTH, 1f / (depth + 1f));
-		sliceByPointMat.SetMatrix (PROP_UV_TO_NEAR, uvToNearMat);
-		sliceByPointMat.SetMatrix (PROP_UV_TO_FAR, uvToFarMat);
-		sliceByPointMat.SetMatrix (PROP_MODEL_MAT, transform.localToWorldMatrix);
-		sliceByPointMat.SetTexture (PROP_VOXEL_TEX, voxelTex);
+		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / (depth + 1f));
+		sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_NEAR, uvToNearMat);
+		sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_FAR, uvToFarMat);
+		sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, transform.localToWorldMatrix);
+		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
 		Graphics.DrawProcedural (MeshTopology.Points, depth);
 	}
 	#endregion
 
 	public void SetTexture(Texture tex) {
-		voxelTex = tex;
+		Debug.Log ("Set Voxel Color Texture");
+		this.voxelTex = tex;
+	}
+	public void Set(AbstractVoxelBounds voxelBounds) {
+		Debug.Log ("Set Voxel Bounds");
+		this.voxelBounds = voxelBounds;
 	}
 	public bool IsInitialized {
-		get { return frustumCam != null && isActiveAndEnabled; }
-	}
-	public Vector3 ViewportToLocalPosition(Vector3 viewportPos) {
-		var worldPos = frustumCam.ViewportToWorldPoint (viewportPos);
-		return frustumCam.transform.InverseTransformPoint (worldPos);
+		get { return voxelTex != null && voxelBounds != null && isActiveAndEnabled; }
 	}
 }

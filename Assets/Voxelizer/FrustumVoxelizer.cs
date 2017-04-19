@@ -7,16 +7,8 @@ using Gist;
 public class FrustumVoxelizer : MonoBehaviour {
 	public const float NEAR_DISTANCE = 10f;
 
-	public const string RESULT = "Result";
-	public const string VOXEL_SIZE = "_VoxelSize";
-	public const string VOXEL_COLOR_TEX = "_VoxelColorTex";
-	public const string VOXEL_FACE_TEX = "_VoxelFaceTex";
-
-	int PROP_VOXEL_SIZE;
-	int PROP_VOXEL_COLOR_TEX;
-	int PROP_VOXEL_FACE_TEX;
-
 	public TextureEvent OnCreateVoxelTexture;
+	public VoxelBoundsEvent VoxelBoundsOnChange;
 	
 	public Bounds bounds = new Bounds (Vector3.zero, 10f * Vector3.one);
 	public Color boundsColor = Color.green;
@@ -31,26 +23,20 @@ public class FrustumVoxelizer : MonoBehaviour {
 	VoxelTexture faceTex;
 	VoxelTextureCleaner cleaner;
 
+	ShaderConstants shaderConstants;
 	ManuallyRenderCamera renderCam;
+	TransformVoxelBounds voxelBounds;
 
 	#region Unity
 	void OnEnable() {
-		PROP_VOXEL_SIZE = Shader.PropertyToID(VOXEL_SIZE);
-		PROP_VOXEL_COLOR_TEX = Shader.PropertyToID(VOXEL_COLOR_TEX);
-		PROP_VOXEL_FACE_TEX = Shader.PropertyToID (VOXEL_FACE_TEX);
+		shaderConstants = ShaderConstants.Instance;
 
-		renderCam = new ManuallyRenderCamera ((cam) => {
-			var bextent = bounds.extents;
-			cam.transform.position = transform.position - (bextent.z + NEAR_DISTANCE) * transform.forward;
-			cam.transform.rotation = transform.rotation;
-
-			var bsize = bounds.size;
-			cam.orthographic = true;
-			cam.orthographicSize = bextent.y;
-			cam.nearClipPlane = NEAR_DISTANCE;
-			cam.farClipPlane = bsize.z + NEAR_DISTANCE;
-			cam.aspect = bsize.x / bsize.y;
-		});
+		voxelBounds = new TransformVoxelBounds (transform);
+		voxelBounds.Changed += (obj) => {
+			Debug.Log("Voxel Bounds changed");
+			VoxelBoundsOnChange.Invoke (obj);
+		};
+		renderCam = new ManuallyRenderCamera ((cam) => FitCameraToVoxelBounds (cam));
 
 		colorTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.ARGB32);
 		colorTex.OnCreateVoxelTexture += (v) => {
@@ -59,16 +45,16 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 		faceTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.R8);
 
-        cleaner = new VoxelTextureCleaner (clearCompute, 0, RESULT);
+		cleaner = new VoxelTextureCleaner (clearCompute, 0, ShaderConstants.RESULT);
 
 		Init ();
 	}
 	void Update() {
 		Init ();
 		Clear ();
-		Shader.SetGlobalVector (PROP_VOXEL_SIZE, colorTex.ResolutionVector);
-		Shader.SetGlobalTexture (PROP_VOXEL_COLOR_TEX, colorTex.Texture);
-		Shader.SetGlobalTexture (PROP_VOXEL_FACE_TEX, faceTex.Texture);
+		Shader.SetGlobalVector (shaderConstants.PROP_VOXEL_SIZE, colorTex.ResolutionVector);
+		Shader.SetGlobalTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, colorTex.Texture);
+		Shader.SetGlobalTexture (shaderConstants.PROP_VOXEL_FACE_TEX, faceTex.Texture);
 		Render();
 	}
 	void OnDrawGizmos() {
@@ -86,7 +72,12 @@ public class FrustumVoxelizer : MonoBehaviour {
 	}
 	#endregion
 
+	public AbstractVoxelBounds VoxelBounds { get { return voxelBounds; } }
+
 	void Init () {
+		voxelBounds.LocalBounds = bounds;
+		voxelBounds.Update ();
+
 		colorTex.SetResolution(prefferedVoxelResolution);
 		faceTex.SetResolution (prefferedVoxelResolution);
 	}
@@ -105,6 +96,20 @@ public class FrustumVoxelizer : MonoBehaviour {
 			RenderTexture.ReleaseTemporary (targetTex);
 		}
 	}
+
+	void FitCameraToVoxelBounds (Camera cam) {
+		var bounds = voxelBounds.LocalBounds;
+		var bextent = bounds.extents;
+		cam.transform.position = transform.position - (bextent.z + NEAR_DISTANCE) * transform.forward;
+		cam.transform.rotation = transform.rotation;
+		var bsize = bounds.size;
+		cam.orthographic = true;
+		cam.orthographicSize = bextent.y;
+		cam.nearClipPlane = NEAR_DISTANCE;
+		cam.farClipPlane = bsize.z + NEAR_DISTANCE;
+		cam.aspect = bsize.x / bsize.y;
+	}
+
 	void Release<T>(ref T resource) where T : Object {
 		if (Application.isPlaying)
 			Object.Destroy (resource);
