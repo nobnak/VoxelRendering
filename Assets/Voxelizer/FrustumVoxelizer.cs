@@ -26,6 +26,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 	ShaderConstants shaderConstants;
 	ManuallyRenderCamera renderCam;
 	TransformVoxelBounds voxelBounds;
+    VoxelCameraDirection cameraDirection;
 
 	#region Unity
 	void OnEnable() {
@@ -36,7 +37,8 @@ public class FrustumVoxelizer : MonoBehaviour {
 			Debug.Log("Voxel Bounds changed");
 			VoxelBoundsOnChange.Invoke (obj);
 		};
-		renderCam = new ManuallyRenderCamera ((cam) => FitCameraToVoxelBounds (cam));
+        cameraDirection = new VoxelCameraDirection ();
+        renderCam = new ManuallyRenderCamera ((cam) => cameraDirection.FitCameraToVoxelBounds (cam, voxelBounds));
 
 		colorTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.ARGB32);
 		colorTex.OnCreateVoxelTexture += (v) => {
@@ -55,6 +57,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 		Shader.SetGlobalVector (shaderConstants.PROP_VOXEL_SIZE, colorTex.ResolutionVector);
 		Shader.SetGlobalTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, colorTex.Texture);
 		Shader.SetGlobalTexture (shaderConstants.PROP_VOXEL_FACE_TEX, faceTex.Texture);
+        Shader.SetGlobalMatrix (shaderConstants.PROP_VOXEL_ROTATION_MAT, cameraDirection.VoxelDirection);
 		Render();
 	}
 	void OnDrawGizmos() {
@@ -95,25 +98,5 @@ public class FrustumVoxelizer : MonoBehaviour {
 		} finally {
 			RenderTexture.ReleaseTemporary (targetTex);
 		}
-	}
-
-	void FitCameraToVoxelBounds (Camera cam) {
-		var bounds = voxelBounds.LocalBounds;
-		var bextent = bounds.extents;
-		cam.transform.position = transform.position - (bextent.z + NEAR_DISTANCE) * transform.forward;
-		cam.transform.rotation = transform.rotation;
-		var bsize = bounds.size;
-		cam.orthographic = true;
-		cam.orthographicSize = bextent.y;
-		cam.nearClipPlane = NEAR_DISTANCE;
-		cam.farClipPlane = bsize.z + NEAR_DISTANCE;
-		cam.aspect = bsize.x / bsize.y;
-	}
-
-	void Release<T>(ref T resource) where T : Object {
-		if (Application.isPlaying)
-			Object.Destroy (resource);
-		else
-			Object.DestroyImmediate (resource);
 	}
 }
