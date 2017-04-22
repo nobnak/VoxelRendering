@@ -5,10 +5,10 @@ using UnityEngine;
 public class VoxelCameraDirection {
     public enum DirectionEnum { LookForward = 0, LookRight = 1, LookUp = 2 }
 
-    public static readonly Vector3 NORMALIZED_ORIGIN = new Vector3(0f, 0f, 0f);
-    public static readonly Vector3 NORMALIZED_RIGHT = new Vector3 (1f, 0f, 0f);
-    public static readonly Vector3 NORMALIZED_UP = new Vector3 (0f, 1f, 0f);
-    public static readonly Vector3 NORMALIZED_FORWARD = new Vector3 (0f, 0f, 1f);
+    public static readonly Vector3 NORMALIZED_ORIGIN = new Vector3(0.5f, 0.5f, 0.5f);
+    public static readonly Vector3 NORMALIZED_RIGHT = new Vector3 (1f, 0.5f, 0.5f);
+    public static readonly Vector3 NORMALIZED_UP = new Vector3 (0.5f, 1f, 0.5f);
+    public static readonly Vector3 NORMALIZED_FORWARD = new Vector3 (0.5f, 0.5f, 1f);
 
     public readonly float cameraToVoxelDistance;
 
@@ -24,7 +24,10 @@ public class VoxelCameraDirection {
 
     public DirectionEnum Direction {
         get { return direction; }
-        set { ChangeDirection (value); }
+        set { 
+            if (direction != value)
+                ChangeDirection (value); 
+        }
     }
     public Matrix4x4 VoxelDirection {
         get { return basisRotationMatrix; }
@@ -41,12 +44,12 @@ public class VoxelCameraDirection {
         var forwardLength = forward.magnitude;
 
         var nearClipPlane = cameraToVoxelDistance;
-        var farClipPlane = nearClipPlane + forwardLength;
+        var farClipPlane = nearClipPlane + 2f * forwardLength;
 
-        cam.transform.position = origin - (nearClipPlane / forwardLength) * forward;
+        cam.transform.position = origin - (nearClipPlane / forwardLength + 1f) * forward;
         cam.transform.rotation = Quaternion.LookRotation (forward, up);
         cam.orthographic = true;
-        cam.orthographicSize = 0.5f * upLength;
+        cam.orthographicSize = upLength;
         cam.nearClipPlane = nearClipPlane;
         cam.farClipPlane = farClipPlane;
         cam.aspect = rightLength / upLength;
