@@ -8,6 +8,7 @@ public class ShaderConstants {
 	public const string VOXEL_SIZE = "_VoxelSize";
 	public const string VOXEL_COLOR_TEX = "_VoxelColorTex";
 	public const string VOXEL_FACE_TEX = "_VoxelFaceTex";
+	public const string VOXEL_ROTATION_MAT = "_VoxelRotationMat";
 
 	public const string VERTEX_TO_DEPTH = "_VertexToDepth";
 	public const string UV_TO_NEAR = "_UVToNearPlaneMat";
@@ -17,6 +18,7 @@ public class ShaderConstants {
 	public readonly int PROP_VOXEL_SIZE;
 	public readonly int PROP_VOXEL_COLOR_TEX;
 	public readonly int PROP_VOXEL_FACE_TEX;
+	public readonly int PROP_VOXEL_ROTATION_MAT;
 
 	public readonly int PROP_VERTEX_TO_DEPTH;
 	public readonly int PROP_UV_TO_NEAR;
@@ -33,6 +35,7 @@ public class ShaderConstants {
 		PROP_VOXEL_SIZE = Shader.PropertyToID (VOXEL_SIZE);
 		PROP_VOXEL_COLOR_TEX = Shader.PropertyToID (VOXEL_COLOR_TEX);
 		PROP_VOXEL_FACE_TEX = Shader.PropertyToID (VOXEL_FACE_TEX);
+		PROP_VOXEL_ROTATION_MAT = Shader.PropertyToID (VOXEL_ROTATION_MAT);
 
 		PROP_VERTEX_TO_DEPTH = Shader.PropertyToID (VERTEX_TO_DEPTH);
 		PROP_UV_TO_NEAR = Shader.PropertyToID (UV_TO_NEAR);
