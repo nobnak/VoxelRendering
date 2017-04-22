@@ -10,6 +10,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 	public TextureEvent OnCreateVoxelTexture;
 	public VoxelBoundsEvent VoxelBoundsOnChange;
 	
+    public VoxelCameraDirection.DirectionEnum cameraDirectionMode;
 	public Bounds bounds = new Bounds (Vector3.zero, 10f * Vector3.one);
 	public Color boundsColor = Color.green;
 
@@ -83,6 +84,8 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 		colorTex.SetResolution(prefferedVoxelResolution);
 		faceTex.SetResolution (prefferedVoxelResolution);
+
+        cameraDirection.Direction = cameraDirectionMode;
 	}
 	void Clear () {
 		cleaner.Clear (colorTex.Texture);
