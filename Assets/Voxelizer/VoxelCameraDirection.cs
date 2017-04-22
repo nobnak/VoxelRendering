@@ -5,10 +5,10 @@ using UnityEngine;
 public class VoxelCameraDirection {
     public enum DirectionEnum { LookForward = 0, LookRight = 1, LookUp = 2 }
 
-    public static readonly Vector3 NORMALIZED_ORIGIN = new Vector3(0.5f, 0.5f, 0.5f);
-    public static readonly Vector3 NORMALIZED_RIGHT = new Vector3 (1f, 0.5f, 0.5f);
-    public static readonly Vector3 NORMALIZED_UP = new Vector3 (0.5f, 1f, 0.5f);
-    public static readonly Vector3 NORMALIZED_FORWARD = new Vector3 (0.5f, 0.5f, 1f);
+    public static readonly Vector3 NORMALIZED_ORIGIN = 0.5f * Vector3.one;
+    public static readonly Vector3 NORMALIZED_RIGHT = 0.5f * new Vector3 (1f, 0f, 0f);
+    public static readonly Vector3 NORMALIZED_UP = 0.5f * new Vector3 (0f, 1f, 0f);
+    public static readonly Vector3 NORMALIZED_FORWARD = 0.5f * new Vector3 (0f, 0f, 1f);
 
     public readonly float cameraToVoxelDistance;
 
@@ -35,9 +35,14 @@ public class VoxelCameraDirection {
 
     public void FitCameraToVoxelBounds (Camera cam, AbstractVoxelBounds voxelBounds) {
         var origin = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_ORIGIN));
-        var right = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_RIGHT)) - origin;
-        var up = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_UP)) - origin;
-        var forward = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_FORWARD)) - origin;
+        var right = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_RIGHT) + NORMALIZED_ORIGIN) - origin;
+        var up = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_UP) + NORMALIZED_ORIGIN) - origin;
+        var forward = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_FORWARD) + NORMALIZED_ORIGIN) - origin;
+
+        Debug.LogFormat ("Right={0} Up={1} Forward={2}", 
+            basisRotationMatrix.MultiplyVector (NORMALIZED_RIGHT), 
+            basisRotationMatrix.MultiplyVector (NORMALIZED_UP), 
+            basisRotationMatrix.MultiplyVector (NORMALIZED_FORWARD));
 
         var upLength = up.magnitude;
         var rightLength = right.magnitude;
@@ -57,8 +62,8 @@ public class VoxelCameraDirection {
 
     Matrix4x4 ShiftRight(Matrix4x4 m) {
         var n = Matrix4x4.identity;
-        for (var i = 2; i >= 0; i--)
-            n.SetColumn ((i + 1) % 3, m.GetColumn (i));
+        for (var i = 0; i < 3; i++)
+            n.SetColumn (i, m.GetColumn ((i + 1) % 3));
         return n;
     }
     Matrix4x4 ShiftRight(Matrix4x4 m, int count) {
