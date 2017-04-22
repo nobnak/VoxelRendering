@@ -130,7 +130,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 342534502}
-  m_LocalRotation: {x: 0, y: -0.78400576, z: 0, w: -0.6207535}
+  m_LocalRotation: {x: 0, y: 0.26804736, z: 0, w: 0.9634057}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -180,7 +180,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   depth: 256
-  frustumCam: {fileID: 0}
   sliceByPointMat: {fileID: 2100000, guid: df8c6dd39a0df5b47a5591602c0f3d88, type: 2}
 --- !u!4 &437114418
 Transform:
@@ -411,6 +410,7 @@ MonoBehaviour:
         m_CallState: 1
     m_TypeName: VoxelBoundsEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
+  cameraDirectionMode: 1
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 5, y: 5, z: 5}
@@ -458,7 +458,7 @@ Transform:
   m_GameObject: {fileID: 1848343194}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 10, z: 2}
+  m_LocalScale: {x: 2, y: 9, z: 2}
   m_Children: []
   m_Father: {fileID: 342534503}
   m_RootOrder: 2
