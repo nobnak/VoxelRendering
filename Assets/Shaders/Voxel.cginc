@@ -4,8 +4,10 @@
 #define VOXEL_SIZE_VARIABLE _VoxelSize
 #define VOXEL_COLOR_TEX_VARIABLE _VoxelColorTex
 #define VOXEL_NORMAL_TEX_VARIABLE _VoxelFaceTex
+#define VOXEL_ROTATION_MAT_VARIABLE _VoxelRotationMat
 
 float4 VOXEL_SIZE_VARIABLE;
+float4x4 VOXEL_ROTATION_MAT_VARIABLE;
 
 float3 NormalizedFromClipPosition(float4 clipPos) {
 	float3 ndcPos = clipPos.xyz / clipPos.w;
@@ -13,15 +15,15 @@ float3 NormalizedFromClipPosition(float4 clipPos) {
 	normalizedPos.y = (_ProjectionParams.x > 0 ? normalizedPos.y : 1.0 - normalizedPos.y);
 	return normalizedPos;
 }
-
-uint3 VoxelFromNormalizedPosition(float3 normalizedPos) {
+uint3 VoxelIDFromNormalizedPosition(float3 normalizedPos) {
+	normalizedPos = mul(VOXEL_ROTATION_MAT_VARIABLE, float4(normalizedPos, 1)).xyz;
 	float3 pixelPos = _VoxelSize.xyz * normalizedPos;
 	uint3 id = (uint3)floor(pixelPos);
 	return id;
 }
-uint3 VoxelFromClipPosition(float4 clipPos) {
+uint3 VoxelIDFromClipPosition(float4 clipPos) {
 	float3 normalizedPos = NormalizedFromClipPosition(clipPos);
-	return VoxelFromNormalizedPosition(normalizedPos);
+	return VoxelIDFromNormalizedPosition(normalizedPos);
 }
 
 
@@ -38,7 +40,7 @@ void StoreResultByID(uint3 id, float4 resultColor, float3 resultNormal) {
 	VOXEL_NORMAL_TEX_VARIABLE[id] = abs(dot(resultNormal, float3(0,0,1)));
 }
 void StoreResultByClipPos(float4 clipPos, float4 resultColor, float3 resultNormal) {
-	uint3 id = VoxelFromClipPosition(clipPos);
+	uint3 id = VoxelIDFromClipPosition(clipPos);
 	StoreResultByID(id, resultColor, resultNormal);
 }
 
