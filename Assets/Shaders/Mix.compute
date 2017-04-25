@@ -1,0 +1,13 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+Texture3D<float4> Forward;
+Texture3D<float4> Right;
+Texture3D<float4> Up;
+
+RWTexture3D<float4> Result;
+
+[numthreads(4, 4, 4)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+	Result[id] = Right[id] + Up[id] + Forward[id];
+}

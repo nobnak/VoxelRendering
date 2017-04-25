@@ -73,7 +73,7 @@
 			fixed4 frag (psin i) : SV_Target {
 				float4 c = tex3D(VOXEL_COLOR_TEX_VARIABLE, i.uv) * _Color;
                 float f = tex3D(VOXEL_NORMAL_TEX_VARIABLE, i.uv);
-                c.a *= f;
+                //c.a *= f;
 				clip(c.a - _Cutout);
 				return c;
 			}

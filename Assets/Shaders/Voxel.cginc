@@ -36,12 +36,13 @@ RWTexture3D<float4> VOXEL_COLOR_TEX_VARIABLE : register(u1);
 RWTexture3D<float> VOXEL_NORMAL_TEX_VARIABLE : register(u2);
 
 void StoreResultByID(uint3 id, float4 resultColor, float3 resultNormal) {
-	VOXEL_COLOR_TEX_VARIABLE[id] = resultColor;
-	VOXEL_NORMAL_TEX_VARIABLE[id] = abs(dot(resultNormal, float3(0,0,1)));
+    float facingRatio = abs(dot(resultNormal, float3(0,0,1)));
+	VOXEL_COLOR_TEX_VARIABLE[id] = facingRatio * resultColor;
+	VOXEL_NORMAL_TEX_VARIABLE[id] = facingRatio;
 }
 void StoreResultByClipPos(float4 clipPos, float4 resultColor, float3 resultNormal) {
 	uint3 id = VoxelIDFromClipPosition(clipPos);
-	StoreResultByID(id, resultColor, resultNormal);
+    StoreResultByID(id, resultColor, resultNormal);
 }
 
 

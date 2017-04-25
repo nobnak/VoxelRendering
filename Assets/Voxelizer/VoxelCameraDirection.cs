@@ -39,11 +39,6 @@ public class VoxelCameraDirection {
         var up = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_UP) + NORMALIZED_ORIGIN) - origin;
         var forward = voxelBounds.NormalizedToWorldPosition (basisRotationMatrix.MultiplyVector (NORMALIZED_FORWARD) + NORMALIZED_ORIGIN) - origin;
 
-        Debug.LogFormat ("Right={0} Up={1} Forward={2}", 
-            basisRotationMatrix.MultiplyVector (NORMALIZED_RIGHT), 
-            basisRotationMatrix.MultiplyVector (NORMALIZED_UP), 
-            basisRotationMatrix.MultiplyVector (NORMALIZED_FORWARD));
-
         var upLength = up.magnitude;
         var rightLength = right.magnitude;
         var forwardLength = forward.magnitude;
