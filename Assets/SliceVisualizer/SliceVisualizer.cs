@@ -38,19 +38,20 @@ public class SliceVisualizer : MonoBehaviour {
 		uvToFarMat.SetColumn (1, farUp);
 		uvToFarMat.SetColumn (3, farBase);
 
-		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / (depth + 1f));
+		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
 		sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_NEAR, uvToNearMat);
 		sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_FAR, uvToFarMat);
 		sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, transform.localToWorldMatrix);
 		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
-		Graphics.DrawProcedural (MeshTopology.Points, depth);
+        Graphics.DrawProcedural (MeshTopology.Points, depth);
 	}
 	#endregion
 
 	public void SetTexture(Texture tex) {
 		Debug.Log ("Set Voxel Color Texture");
 		this.voxelTex = tex;
+        this.depth = tex.width;
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
 		Debug.Log ("Set Voxel Bounds");

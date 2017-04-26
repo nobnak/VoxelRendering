@@ -2,13 +2,15 @@
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_Cutout ("Cutout Threshold", Range(0,1)) = 0.5
+
+        _DepthTexelOffset ("Depth Texel Offset", Range(0,1)) = 0
 	}
 	SubShader {
-        //Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" "IgnoreProjector"="True" }
-        //Cull Off ZWrite On ZTest LEqual
-        Tags { "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True" }
-        Cull Off ZWrite Off ZTest Always
-        Blend One One
+        Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" "IgnoreProjector"="True" }
+        Cull Off ZWrite On ZTest LEqual
+        //Tags { "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True" }
+        //Cull Off ZWrite Off ZTest Always
+        //Blend SrcAlpha One
 
 		Pass {
 			CGPROGRAM
@@ -33,6 +35,7 @@
 
 			float4 _Color;
 			float _Cutout;
+            float _DepthTexelOffset;
 
 			float _VertexToDepth;
 
@@ -48,7 +51,7 @@
 
 			gsin vert (appdata v) {
 				gsin o;
-				o.w = v.vid * _VertexToDepth;
+				o.w = (v.vid + _DepthTexelOffset) * _VertexToDepth;
 				return o;
 			}
 
@@ -75,8 +78,9 @@
 
 			fixed4 frag (psin i) : SV_Target {
 				float4 c = tex3D(VOXEL_COLOR_TEX_VARIABLE, i.uv) * _Color;
-				//clip(c.a - _Cutout);
-				return c.a * float4(c.rgb, 1);
+				clip(c.a - _Cutout);
+                return c;
+				//return c.a * float4(c.rgb, 1);
 			}
 			ENDCG
 		}

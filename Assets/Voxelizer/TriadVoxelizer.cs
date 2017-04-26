@@ -7,7 +7,7 @@ using Gist;
 public class TriadVoxelizer : System.IDisposable {
 	public const float NEAR_DISTANCE = 10f;
     public const RenderTextureFormat FORMAT = RenderTextureFormat.ARGB32;
-    public const FilterMode FILTER_MODE = FilterMode.Point;
+    public const FilterMode FILTER_MODE = FilterMode.Bilinear;
     public const TextureWrapMode WRAP_MODE = TextureWrapMode.Clamp;
 
     public static readonly VoxelCameraDirection.DirectionEnum[] DIRECTIONS = 
