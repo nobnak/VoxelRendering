@@ -9,5 +9,9 @@ RWTexture3D<float4> Result;
 
 [numthreads(4, 4, 4)]
 void CSMain (uint3 id : SV_DispatchThreadID) {
-	Result[id] = Right[id] + Up[id] + Forward[id];
+	float4 r = Right[id];
+	float4 u = Up[id];
+	float4 f = Forward[id];
+
+	Result[id] = r.w * float4(r.xyz, 1) + u.w * float4(u.xyz, 1) + f.w * float4(f.xyz, 1);
 }

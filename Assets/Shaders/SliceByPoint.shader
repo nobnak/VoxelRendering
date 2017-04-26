@@ -4,8 +4,11 @@
 		_Cutout ("Cutout Threshold", Range(0,1)) = 0.5
 	}
 	SubShader {
-		Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" "IgnoreProjector"="True" }
-		Cull Off ZWrite On ZTest LEqual
+        //Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" "IgnoreProjector"="True" }
+        //Cull Off ZWrite On ZTest LEqual
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True" }
+        Cull Off ZWrite Off ZTest Always
+        Blend One One
 
 		Pass {
 			CGPROGRAM
@@ -72,10 +75,8 @@
 
 			fixed4 frag (psin i) : SV_Target {
 				float4 c = tex3D(VOXEL_COLOR_TEX_VARIABLE, i.uv) * _Color;
-                float f = tex3D(VOXEL_NORMAL_TEX_VARIABLE, i.uv);
-                //c.a *= f;
-				clip(c.a - _Cutout);
-				return c;
+				//clip(c.a - _Cutout);
+				return c.a * float4(c.rgb, 1);
 			}
 			ENDCG
 		}

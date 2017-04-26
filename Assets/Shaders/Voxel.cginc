@@ -3,7 +3,6 @@
 
 #define VOXEL_SIZE_VARIABLE _VoxelSize
 #define VOXEL_COLOR_TEX_VARIABLE _VoxelColorTex
-#define VOXEL_NORMAL_TEX_VARIABLE _VoxelFaceTex
 #define VOXEL_ROTATION_MAT_VARIABLE _VoxelRotationMat
 
 float4 VOXEL_SIZE_VARIABLE;
@@ -33,12 +32,10 @@ uint3 VoxelIDFromClipPosition(float4 clipPos) {
 
 
 RWTexture3D<float4> VOXEL_COLOR_TEX_VARIABLE : register(u1);
-RWTexture3D<float> VOXEL_NORMAL_TEX_VARIABLE : register(u2);
 
 void StoreResultByID(uint3 id, float4 resultColor, float3 resultNormal) {
     float facingRatio = abs(dot(resultNormal, float3(0,0,1)));
-	VOXEL_COLOR_TEX_VARIABLE[id] = facingRatio * resultColor;
-	VOXEL_NORMAL_TEX_VARIABLE[id] = facingRatio;
+	VOXEL_COLOR_TEX_VARIABLE[id] = resultColor * float4(1,1,1,facingRatio);
 }
 void StoreResultByClipPos(float4 clipPos, float4 resultColor, float3 resultNormal) {
 	uint3 id = VoxelIDFromClipPosition(clipPos);
@@ -52,7 +49,6 @@ void StoreResultByClipPos(float4 clipPos, float4 resultColor, float3 resultNorma
 
 
 sampler3D VOXEL_COLOR_TEX_VARIABLE;
-sampler3D VOXEL_NORMAL_TEX_VARIABLE;
 
 
 

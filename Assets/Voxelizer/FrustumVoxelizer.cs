@@ -15,51 +15,36 @@ public class FrustumVoxelizer : MonoBehaviour {
 	public Color boundsColor = Color.green;
 
 	public int prefferedVoxelResolution = 512;
-	public FilterMode voxelFilterMode = FilterMode.Bilinear;
 
 	public ComputeShader clearCompute;
+    public ComputeShader mixerCompute;
 	public Shader voxelShader;
 
-	VoxelTexture colorTex;
-	VoxelTexture faceTex;
 	VoxelTextureCleaner cleaner;
-
-	ShaderConstants shaderConstants;
-	ManuallyRenderCamera renderCam;
+    VoxelTextureMixer mixer;
 	TransformVoxelBounds voxelBounds;
-    VoxelCameraDirection cameraDirection;
+
+    TriadVoxelizer triad;
+    VoxelTexture result;
 
 	#region Unity
 	void OnEnable() {
-		shaderConstants = ShaderConstants.Instance;
-
 		voxelBounds = new TransformVoxelBounds (transform);
 		voxelBounds.Changed += (obj) => {
 			Debug.Log("Voxel Bounds changed");
 			VoxelBoundsOnChange.Invoke (obj);
 		};
-        cameraDirection = new VoxelCameraDirection ();
-        renderCam = new ManuallyRenderCamera ((cam) => cameraDirection.FitCameraToVoxelBounds (cam, voxelBounds));
-
-		colorTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.ARGB32);
-		colorTex.OnCreateVoxelTexture += (v) => {
-			OnCreateVoxelTexture.Invoke(v.Texture);
-		};
-
-		faceTex = new VoxelTexture (prefferedVoxelResolution, RenderTextureFormat.R8);
-
 		cleaner = new VoxelTextureCleaner (clearCompute, 0, ShaderConstants.RESULT);
+        mixer = new VoxelTextureMixer (mixerCompute);
+        triad = new TriadVoxelizer (voxelShader, cleaner, mixer, voxelBounds, prefferedVoxelResolution);
 
 		Init ();
 	}
 	void Update() {
 		Init ();
-		Clear ();
-		Shader.SetGlobalVector (shaderConstants.PROP_VOXEL_SIZE, colorTex.ResolutionVector);
-		Shader.SetGlobalTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, colorTex.Texture);
-		Shader.SetGlobalTexture (shaderConstants.PROP_VOXEL_FACE_TEX, faceTex.Texture);
-        Shader.SetGlobalMatrix (shaderConstants.PROP_VOXEL_ROTATION_MAT, cameraDirection.VoxelDirection);
-		Render();
+        triad.Update (prefferedVoxelResolution);
+        //OnCreateVoxelTexture.Invoke (triad [cameraDirectionMode].Texture);
+        OnCreateVoxelTexture.Invoke (triad.ResultTexture.Texture);
 	}
 	void OnDrawGizmos() {
 		if (!isActiveAndEnabled)
@@ -71,8 +56,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 		Gizmos.matrix = Matrix4x4.identity;
 	}
 	void OnDisable() {
-		colorTex.Dispose ();
-		renderCam.Dispose ();
+        triad.Dispose ();
 	}
 	#endregion
 
@@ -81,25 +65,5 @@ public class FrustumVoxelizer : MonoBehaviour {
 	void Init () {
 		voxelBounds.LocalBounds = bounds;
 		voxelBounds.Update ();
-
-		colorTex.SetResolution(prefferedVoxelResolution);
-		faceTex.SetResolution (prefferedVoxelResolution);
-
-        cameraDirection.Direction = cameraDirectionMode;
-	}
-	void Clear () {
-		cleaner.Clear (colorTex.Texture);
-		cleaner.Clear (faceTex.Texture);
-	}
-	void Render () {
-		var targetTex = RenderTexture.GetTemporary (colorTex.CurrentResolution, colorTex.CurrentResolution);
-		try {
-			Graphics.SetRandomWriteTarget (1, colorTex.Texture);
-	        Graphics.SetRandomWriteTarget (2, faceTex.Texture);
-			renderCam.RenderWithShader (targetTex, voxelShader, null);
-			Graphics.ClearRandomWriteTargets ();
-		} finally {
-			RenderTexture.ReleaseTemporary (targetTex);
-		}
 	}
 }
