@@ -49,12 +49,10 @@ public class SliceVisualizer : MonoBehaviour {
 	#endregion
 
 	public void SetTexture(Texture tex) {
-		Debug.Log ("Set Voxel Color Texture");
 		this.voxelTex = tex;
         this.depth = tex.width;
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
-		Debug.Log ("Set Voxel Bounds");
 		this.voxelBounds = voxelBounds;
 	}
 	public bool IsInitialized {

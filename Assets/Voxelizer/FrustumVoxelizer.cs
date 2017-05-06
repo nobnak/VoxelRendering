@@ -31,7 +31,6 @@ public class FrustumVoxelizer : MonoBehaviour {
 	void OnEnable() {
 		voxelBounds = new TransformVoxelBounds (transform);
 		voxelBounds.Changed += (obj) => {
-			Debug.Log("Voxel Bounds changed");
 			VoxelBoundsOnChange.Invoke (obj);
 		};
 		cleaner = new VoxelTextureCleaner (clearCompute, 0, ShaderConstants.RESULT);
