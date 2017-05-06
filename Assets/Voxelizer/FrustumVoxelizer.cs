@@ -50,9 +50,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 			return;
 
 		Gizmos.color = boundsColor;
-		Gizmos.matrix = transform.localToWorldMatrix;
-		Gizmos.DrawWireCube (bounds.center, bounds.size);
-		Gizmos.matrix = Matrix4x4.identity;
+        voxelBounds.DrawGizmos ();
 	}
 	void OnDisable() {
         triad.Dispose ();

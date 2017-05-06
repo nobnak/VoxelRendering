@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Gist;
 
 [ExecuteInEditMode]
 public class SliceVisualizer : MonoBehaviour {

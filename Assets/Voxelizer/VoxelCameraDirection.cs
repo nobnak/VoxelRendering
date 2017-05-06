@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Gist;
 
 public class VoxelCameraDirection {
     public enum DirectionEnum { LookForward = 0, LookRight = 1, LookUp = 2 }
