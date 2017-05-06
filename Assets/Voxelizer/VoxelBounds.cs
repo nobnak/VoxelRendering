@@ -6,20 +6,26 @@ using Gist;
 public abstract class AbstractVoxelBounds {
 	public event System.Action<AbstractVoxelBounds> Changed;
 
+    protected bool boundsChanged;
 	protected Bounds bounds;
 
 	protected Vector3 worldMinPosition;
 	protected Vector3 worldMaxPosition;
 
-	public Bounds LocalBounds {
+    public virtual Bounds LocalBounds {
 		get { return bounds; }
-		set {
-			if (bounds != value) {
-				bounds = value;
-				Rebuild ();
-			}
-		}
+		set { 
+            SetBounds (value);
+            Update (); 
+        }
 	}
+    public virtual void Update() {
+        if (IsBoundsChanged())
+            Rebuild ();
+    }
+    public virtual bool IsBoundsChanged() {
+        return boundsChanged;
+    }
 
 	public Vector3 NormalizedToLocalPosition(float u, float v, float w) {
 		var min = bounds.min;
@@ -39,7 +45,12 @@ public abstract class AbstractVoxelBounds {
 
 	protected abstract Vector3 TransformPoint (Vector3 pos);
 
+    protected virtual void SetBounds(Bounds localBounds) {
+        this.boundsChanged = true;
+        this.bounds = localBounds;
+    }
 	protected virtual void Rebuild() {
+        boundsChanged = false;
 		Precompute ();
 		NotifyChanged ();
 	}
@@ -68,11 +79,9 @@ public class TransformVoxelBounds : AbstractVoxelBounds {
 	}
 	#endregion
 
-	public void Update() {
-		if (tr.hasChanged)
-			Rebuild ();
-	}
-
+    public override bool IsBoundsChanged () {
+        return tr.hasChanged || base.IsBoundsChanged ();
+    }
 	protected override void Rebuild() {
 		tr.localScale = Vector3.one;
 		tr.hasChanged = false;
