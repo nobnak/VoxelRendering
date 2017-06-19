@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Visualizer
-  m_Shader: {fileID: 4800000, guid: f75f26aef1ad8634c9a56d55eb4efee4, type: 3}
+  m_Shader: {fileID: 4800000, guid: e3226de753131b649bfdda7279a04fdf, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -27,4 +27,4 @@ Material:
     - _DepthTexelOffset: 0.5
     - _Power: 0.48
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0.297}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
