@@ -13,5 +13,11 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	float4 u = Up[id];
 	float4 f = Forward[id];
 
-	Result[id] = r.w * float4(r.xyz, 1) + u.w * float4(u.xyz, 1) + f.w * float4(f.xyz, 1);
+	float3 w = float3(r.w, u.w, f.w);
+	float3 w2 = w * w;
+	float w2sum = dot(w, w);
+	w2 = (w2sum > 0 ? w2 / w2sum : 0);
+
+	float4 v = w2.x * float4(r.xyz, 1) + w2.y * float4(u.xyz, 1) + w2.z * float4(f.xyz, 1);
+	Result[id] = v;
 }

@@ -75,7 +75,7 @@ public class TriadVoxelizer : System.IDisposable {
 	}
 
     VoxelTexture GenerateVoxelTexture(int prefferedResolution) {
-        return new VoxelTexture (prefferedResolution, FORMAT, FILTER_MODE, WRAP_MODE);
+        return new VoxelTexture (prefferedResolution, FORMAT, FILTER_MODE, WRAP_MODE, RenderTextureReadWrite.Linear);
     }
     void Render (VoxelTexture colorTex, VoxelCameraDirection.DirectionEnum cameraDirectionMode) {
         Shader.SetGlobalVector (shaderConstants.PROP_VOXEL_SIZE, colorTex.ResolutionVector);

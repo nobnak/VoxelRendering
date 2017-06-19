@@ -15,15 +15,19 @@ public class VoxelTexture : System.IDisposable {
 	protected RenderTextureFormat format;
 	protected FilterMode filter;
 	protected TextureWrapMode wrap;
+    protected RenderTextureReadWrite gamma;
 
-	public VoxelTexture(int prefferedResolution, RenderTextureFormat format) : this(prefferedResolution, format, FilterMode.Bilinear, TextureWrapMode.Clamp) {
+	public VoxelTexture(int prefferedResolution, RenderTextureFormat format) 
+        : this(prefferedResolution, format, FilterMode.Bilinear, TextureWrapMode.Clamp, RenderTextureReadWrite.Linear) {
 	}		
-	public VoxelTexture(int prefferedResolution, RenderTextureFormat format, FilterMode filter, TextureWrapMode wrap) {
+	public VoxelTexture(int prefferedResolution, RenderTextureFormat format, FilterMode filter, TextureWrapMode wrap,
+        RenderTextureReadWrite gamma) {
 		this.textureIsValid = false;
 		this.currentResolution = -1;
 		this.format = format;
 		this.filter = filter;
 		this.wrap = wrap;
+        this.gamma = gamma;
 		SetResolution (prefferedResolution, true);
 	}
 
@@ -87,10 +91,11 @@ public class VoxelTexture : System.IDisposable {
 	void Rebuild () {
 		textureIsValid = true;
 		Release (ref voxelTex);
-		voxelTex = new RenderTexture (currentResolution, currentResolution, 0, format);
+        voxelTex = new RenderTexture (currentResolution, currentResolution, 0, format, gamma);
 		voxelTex.dimension = UnityEngine.Rendering.TextureDimension.Tex3D;
 		voxelTex.volumeDepth = currentResolution;
 		voxelTex.enableRandomWrite = true;
+        voxelTex.useMipMap = false;
 		UpdateTextureProperties ();
 		voxelTex.Create ();
 
