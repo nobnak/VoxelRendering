@@ -23,7 +23,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AlphaGain: 1.96
-    - _Cutout: 0.31
+    - _Cutout: 0
     - _DepthTexelOffset: 0.5
     - _Power: 0.48
     m_Colors:
