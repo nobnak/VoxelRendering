@@ -11,8 +11,7 @@ public class ShaderConstants {
 	public const string VOXEL_ROTATION_MAT = "_VoxelRotationMat";
 
 	public const string VERTEX_TO_DEPTH = "_VertexToDepth";
-	public const string UV_TO_NEAR = "_UVToNearPlaneMat";
-	public const string UV_TO_FAR = "_UVToFarPlaneMat";
+    public const string UV_TO_VOXEL_MAT = "_UVToVoxelMat";
 	public const string MODEL_MAT = "_ModelMat";
 
 	public readonly int PROP_VOXEL_SIZE;
@@ -21,8 +20,7 @@ public class ShaderConstants {
 	public readonly int PROP_VOXEL_ROTATION_MAT;
 
 	public readonly int PROP_VERTEX_TO_DEPTH;
-	public readonly int PROP_UV_TO_NEAR;
-	public readonly int PROP_UV_TO_FAR;
+    public readonly int PROP_UV_TO_VOXEL_MAT;
 	public readonly int PROP_MODEL_MAT;
 
 	static ShaderConstants instance;
@@ -38,8 +36,7 @@ public class ShaderConstants {
 		PROP_VOXEL_ROTATION_MAT = Shader.PropertyToID (VOXEL_ROTATION_MAT);
 
 		PROP_VERTEX_TO_DEPTH = Shader.PropertyToID (VERTEX_TO_DEPTH);
-		PROP_UV_TO_NEAR = Shader.PropertyToID (UV_TO_NEAR);
-		PROP_UV_TO_FAR = Shader.PropertyToID (UV_TO_FAR);
+        PROP_UV_TO_VOXEL_MAT = Shader.PropertyToID (UV_TO_VOXEL_MAT);
 		PROP_MODEL_MAT = Shader.PropertyToID (MODEL_MAT);
 	}
 }

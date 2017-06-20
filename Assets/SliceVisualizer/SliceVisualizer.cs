@@ -22,26 +22,19 @@ public class SliceVisualizer : MonoBehaviour {
 		if (!IsInitialized)
 			return;
 
-		var nearBase = voxelBounds.NormalizedToLocalPosition (0f, 0f, 0f);
-		var nearRight = voxelBounds.NormalizedToLocalPosition (1f, 0f, 0f) - nearBase;
-		var nearUp = voxelBounds.NormalizedToLocalPosition (0f, 1f, 0f) - nearBase;
-		var farBase = voxelBounds.NormalizedToLocalPosition (0f, 0f, 1f);
-		var farRight = voxelBounds.NormalizedToLocalPosition (1f, 0f, 1f) - farBase;
-		var farUp =voxelBounds.NormalizedToLocalPosition  (0f, 1f, 1f) - farBase;
+        var voxelBase = voxelBounds.NormalizedToLocalPosition (0f, 0f, 0f);
+        var voxelRight = voxelBounds.NormalizedToLocalPosition (1f, 0f, 0f) - voxelBase;
+        var voxelUp = voxelBounds.NormalizedToLocalPosition (0f, 1f, 0f) - voxelBase;
+        var voxelForward = voxelBounds.NormalizedToLocalPosition (0f, 0f, 1f) - voxelBase;
 
 		var uvToNearMat = Matrix4x4.zero;
-		uvToNearMat.SetColumn (0, nearRight);
-		uvToNearMat.SetColumn (1, nearUp);
-		uvToNearMat.SetColumn (3, nearBase);
-
-		var uvToFarMat = Matrix4x4.zero;
-		uvToFarMat.SetColumn (0, farRight);
-		uvToFarMat.SetColumn (1, farUp);
-		uvToFarMat.SetColumn (3, farBase);
+		uvToNearMat.SetColumn (0, voxelRight);
+		uvToNearMat.SetColumn (1, voxelUp);
+        uvToNearMat.SetColumn (2, voxelForward);
+		uvToNearMat.SetColumn (3, voxelBase);
 
 		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
-		sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_NEAR, uvToNearMat);
-		sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_FAR, uvToFarMat);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, uvToNearMat);
 		sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, transform.localToWorldMatrix);
 		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);

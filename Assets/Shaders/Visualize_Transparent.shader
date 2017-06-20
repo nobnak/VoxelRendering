@@ -34,13 +34,12 @@
 
 			float _VertexToDepth;
 
-			float4x4 _UVToNearPlaneMat;
-			float4x4 _UVToFarPlaneMat;
+			float4x4 _UVToVoxelMat;
 			float4x4 _ModelMat;
 
 			float4 UVWToWorldPosition(float3 uvw) {
-				float4 uv = float4(uvw.xy, 0, 1);
-				float3 localPos = lerp(mul(_UVToNearPlaneMat, uv), mul(_UVToFarPlaneMat, uv), uvw.z).xyz;
+				float4 uv = float4(uvw.xy, uvw.z, 1);
+				float3 localPos = mul(_UVToVoxelMat, uv).xyz;
 				return float4(mul(_ModelMat, float4(localPos, 1)).xyz, 1);
 			}
 
