@@ -19,10 +19,12 @@ public class SliceVisualizer : MonoBehaviour {
 	Texture voxelTex;
 	AbstractVoxelBounds voxelBounds;
 	ShaderConstants shaderConstants;
+    ViewSpaceBounds viewSpaceBounds;
 
 	#region Unity
 	void OnEnable() {
 		shaderConstants = ShaderConstants.Instance;
+        viewSpaceBounds = new ViewSpaceBounds ();
 	}
 	void OnRenderObject() {
 		if (!IsInitialized)
@@ -47,22 +49,15 @@ public class SliceVisualizer : MonoBehaviour {
         Graphics.DrawProcedural (MeshTopology.Points, depth);
 	}
     void OnDrawGizmos() {
-        var modelMat = transform.localToWorldMatrix;
-        Gizmos.color = boundColor;
-        Gizmos.matrix = modelMat;
-        voxelBounds.DrawGizmosLocal ();
-
+        if (!IsInitialized || !viewSpaceBounds.IsInitialized)
+            return;
+        
         var view = (viewCamera == null ? Camera.current : viewCamera);
-        var viewMat = view.worldToCameraMatrix;
-        var mvMat = viewMat * modelMat;
-        var viewSpaceBounds = voxelBounds.LocalBounds.EncapsulateInTargetSpace (mvMat);
-        float h, s, v;
-        Color.RGBToHSV (boundColor, out h, out s, out v);
-        Gizmos.color = Color.HSVToRGB (h + 0.1f, s, v);
-        Gizmos.matrix = view.cameraToWorldMatrix;
-        Gizmos.DrawWireCube (viewSpaceBounds.center, viewSpaceBounds.size);
-            
-        Gizmos.matrix = Matrix4x4.identity;
+        viewSpaceBounds.ViewMatrix = view.transform.worldToLocalMatrix;
+        viewSpaceBounds.ModelMatrix = transform.localToWorldMatrix;
+        viewSpaceBounds.LocalSpaceColor = boundColor;
+        viewSpaceBounds.ViewSpaceColor = boundColor;
+        viewSpaceBounds.DrawGizmos ();
     }
 	#endregion
 
@@ -72,6 +67,8 @@ public class SliceVisualizer : MonoBehaviour {
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
 		this.voxelBounds = voxelBounds;
+
+        viewSpaceBounds.voxelBounds = voxelBounds;
 	}
 	public bool IsInitialized {
 		get { return voxelTex != null && voxelBounds != null && isActiveAndEnabled; }
