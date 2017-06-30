@@ -43,9 +43,6 @@ public class SliceVisualizer : MonoBehaviour {
         if (!IsInitialized || voxelBounds == null)
             return;
         
-        var view = (viewCamera == null ? Camera.current : viewCamera);
-        viewSpaceBounds.ViewMatrix = view.transform.worldToLocalMatrix;
-        viewSpaceBounds.ModelMatrix = transform.localToWorldMatrix;
         viewSpaceBounds.DrawGizmos (voxelBounds, boundColor, boundColor);
     }
 	#endregion
