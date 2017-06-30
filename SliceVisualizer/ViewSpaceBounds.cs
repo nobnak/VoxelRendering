@@ -5,27 +5,37 @@ using Gist;
 using Gist.Extensions.AABB;
 
 public class ViewSpaceBounds {
-    public Color LocalSpaceColor { get; set; }
-    public Color ViewSpaceColor { get; set; }
+    public Matrix4x4 VoxelModel { get; set; }
+    public Matrix4x4 View { get; set; }
+    public Matrix4x4 ModelView { get; private set; }
 
-    public Matrix4x4 ModelMatrix { get; set; }
-    public Matrix4x4 ViewMatrix { get; set; }
+    public Bounds ViewBounds { get; private set; }
 
-    public AbstractVoxelBounds voxelBounds { get; set; }
+    public void Update(AbstractVoxelBounds voxelBounds, Matrix4x4 voxelModel, Matrix4x4 view) {
+        var voxelUvToLocal = voxelBounds.VoxelUvToLocalMatrix ();
 
-    public void DrawGizmos() {
-        Gizmos.color = LocalSpaceColor;
-        Gizmos.matrix = ModelMatrix;
+        VoxelModel = voxelModel;
+        View = view;
+        ModelView = View * VoxelModel;
+
+        ViewBounds = voxelBounds.LocalBounds.EncapsulateInTargetSpace (ModelView);
+
+        var size = ViewBounds.size;
+        var min = ViewBounds.min;
+        var m = Matrix4x4.zero;
+        m[0] = 
+
+    }
+    public void DrawGizmos(AbstractVoxelBounds voxelBounds, Color localColor, Color viewColor) {
+        Gizmos.color = localColor;
+        Gizmos.matrix = VoxelModel;
         voxelBounds.DrawGizmosLocal ();
 
-        var mvMat = ViewMatrix * ModelMatrix;
-        var viewSpaceBounds = voxelBounds.LocalBounds.EncapsulateInTargetSpace (mvMat);
-        Gizmos.color = ViewSpaceColor;
-        Gizmos.matrix = ViewMatrix.inverse;
+        var viewSpaceBounds = voxelBounds.LocalBounds.EncapsulateInTargetSpace (ModelView);
+        Gizmos.color = viewColor;
+        Gizmos.matrix = View.inverse;
         Gizmos.DrawWireCube (viewSpaceBounds.center, viewSpaceBounds.size);
 
         Gizmos.matrix = Matrix4x4.identity;
     }
-
-    public bool IsInitialized { get { return voxelBounds != null; } }
 }

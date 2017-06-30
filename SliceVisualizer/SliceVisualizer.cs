@@ -30,34 +30,23 @@ public class SliceVisualizer : MonoBehaviour {
 		if (!IsInitialized)
 			return;
 
-        var voxelBase = voxelBounds.NormalizedToLocalPosition (0f, 0f, 0f);
-        var voxelRight = voxelBounds.NormalizedToLocalPosition (1f, 0f, 0f) - voxelBase;
-        var voxelUp = voxelBounds.NormalizedToLocalPosition (0f, 1f, 0f) - voxelBase;
-        var voxelForward = voxelBounds.NormalizedToLocalPosition (0f, 0f, 1f) - voxelBase;
-
-        var uvToVoxelMat = Matrix4x4.zero;
-		uvToVoxelMat.SetColumn (0, voxelRight);
-		uvToVoxelMat.SetColumn (1, voxelUp);
-        uvToVoxelMat.SetColumn (2, voxelForward);
-		uvToVoxelMat.SetColumn (3, voxelBase);
+        var voxelUvToLocalMat = voxelBounds.VoxelUvToLocalMatrix ();
 
 		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
-        sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, uvToVoxelMat);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, voxelUvToLocalMat);
 		sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, transform.localToWorldMatrix);
 		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
         Graphics.DrawProcedural (MeshTopology.Points, depth);
 	}
     void OnDrawGizmos() {
-        if (!IsInitialized || !viewSpaceBounds.IsInitialized)
+        if (!IsInitialized || voxelBounds == null)
             return;
         
         var view = (viewCamera == null ? Camera.current : viewCamera);
         viewSpaceBounds.ViewMatrix = view.transform.worldToLocalMatrix;
         viewSpaceBounds.ModelMatrix = transform.localToWorldMatrix;
-        viewSpaceBounds.LocalSpaceColor = boundColor;
-        viewSpaceBounds.ViewSpaceColor = boundColor;
-        viewSpaceBounds.DrawGizmos ();
+        viewSpaceBounds.DrawGizmos (voxelBounds, boundColor, boundColor);
     }
 	#endregion
 
@@ -67,8 +56,6 @@ public class SliceVisualizer : MonoBehaviour {
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
 		this.voxelBounds = voxelBounds;
-
-        viewSpaceBounds.voxelBounds = voxelBounds;
 	}
 	public bool IsInitialized {
 		get { return voxelTex != null && voxelBounds != null && isActiveAndEnabled; }
