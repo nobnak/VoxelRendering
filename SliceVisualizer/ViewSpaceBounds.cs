@@ -7,37 +7,43 @@ using Gist.Extensions.AABB;
 public class ViewSpaceBounds {
     public Matrix4x4 VoxelModel { get; set; }
     public Matrix4x4 View { get; set; }
-    public Matrix4x4 ModelView { get; private set; }
 
+    public Bounds LocalBounds { get; private set; }
     public Bounds ViewBounds { get; private set; }
 
-    public void Update(AbstractVoxelBounds voxelBounds, Matrix4x4 voxelModel, Matrix4x4 view) {
-        var voxelUvToLocal = voxelBounds.VoxelUvToLocalMatrix ();
+    public Matrix4x4 VoxelUvToLocal { get; private set; }
+    public Matrix4x4 ViewUvToLocal { get; private set; }
+    public Matrix4x4 ViewUvToVoxelUv { get; private set; }
 
+    public void Init(AbstractVoxelBounds voxelBounds, Matrix4x4 voxelModel) {
+        LocalBounds = voxelBounds.LocalBounds;
+        VoxelUvToLocal = voxelBounds.VoxelUvToLocalMatrix ();
         VoxelModel = voxelModel;
+    }
+    public void SetView(Matrix4x4 view) {
         View = view;
-        ModelView = View * VoxelModel;
 
-        ViewBounds = voxelBounds.LocalBounds.EncapsulateInTargetSpace (ModelView);
+        var modelView = View * VoxelModel;
+        ViewBounds = LocalBounds.EncapsulateInTargetSpace (modelView);
 
-        var viewUvToViewBounds = ViewUvToViewBounds ();
+        ViewUvToLocal = CalculateViewUvToViewLocal (ViewBounds);
+        ViewUvToVoxelUv = (modelView * VoxelUvToLocal).inverse * ViewUvToLocal;
     }
     public void DrawGizmos(AbstractVoxelBounds voxelBounds, Color localColor, Color viewColor) {
         Gizmos.color = localColor;
         Gizmos.matrix = VoxelModel;
         voxelBounds.DrawGizmosLocal ();
 
-        var viewSpaceBounds = voxelBounds.LocalBounds.EncapsulateInTargetSpace (ModelView);
         Gizmos.color = viewColor;
-        Gizmos.matrix = View.inverse;
-        Gizmos.DrawWireCube (viewSpaceBounds.center, viewSpaceBounds.size);
+        Gizmos.matrix = View.inverse * ViewUvToLocal;
+        Gizmos.DrawWireCube (0.5f * Vector3.one, 1f * Vector3.one);
 
         Gizmos.matrix = Matrix4x4.identity;
     }
 
-    Matrix4x4 ViewUvToViewBounds () {
-        var size = ViewBounds.size;
-        var min = ViewBounds.min;
+    static Matrix4x4 CalculateViewUvToViewLocal (Bounds viewBounds) {
+        var size = viewBounds.size;
+        var min = viewBounds.min;
         var m = Matrix4x4.zero;
         m [0] = size.x;
         m [12] = min.x;

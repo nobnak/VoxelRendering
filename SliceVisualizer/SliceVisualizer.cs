@@ -26,15 +26,21 @@ public class SliceVisualizer : MonoBehaviour {
 		shaderConstants = ShaderConstants.Instance;
         viewSpaceBounds = new ViewSpaceBounds ();
 	}
+    void Update() {
+        var view = Camera.main.transform.worldToLocalMatrix;
+        viewSpaceBounds.Init (voxelBounds, transform.localToWorldMatrix);
+    }
 	void OnRenderObject() {
 		if (!IsInitialized)
 			return;
 
-        var voxelUvToLocalMat = voxelBounds.VoxelUvToLocalMatrix ();
+        var voxelUvToLocal = viewSpaceBounds.VoxelUvToLocal;
+        var model = transform.localToWorldMatrix;
+        viewSpaceBounds.SetView (Camera.current.transform.worldToLocalMatrix);
 
 		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
-        sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, voxelUvToLocalMat);
-		sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, transform.localToWorldMatrix);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, voxelUvToLocal);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, model);
 		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
         Graphics.DrawProcedural (MeshTopology.Points, depth);
@@ -43,6 +49,7 @@ public class SliceVisualizer : MonoBehaviour {
         if (!IsInitialized || voxelBounds == null)
             return;
         
+        viewSpaceBounds.SetView (Camera.current.transform.worldToLocalMatrix);
         viewSpaceBounds.DrawGizmos (voxelBounds, boundColor, boundColor);
     }
 	#endregion
