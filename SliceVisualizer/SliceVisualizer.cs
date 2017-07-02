@@ -14,6 +14,8 @@ public class SliceVisualizer : MonoBehaviour {
     [SerializeField]
     Color boundColor = Color.green;
     [SerializeField]
+    Color voxelColor = Color.green;
+    [SerializeField]
     Camera viewCamera;
 
 	Texture voxelTex;
@@ -53,7 +55,7 @@ public class SliceVisualizer : MonoBehaviour {
             return;
         
         viewSpaceBounds.SetView (Camera.current.transform.worldToLocalMatrix);
-        viewSpaceBounds.DrawGizmos (voxelBounds, boundColor, boundColor);
+        viewSpaceBounds.DrawGizmos (voxelBounds, voxelColor, boundColor);
     }
 	#endregion
 
