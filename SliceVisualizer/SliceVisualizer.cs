@@ -35,13 +35,15 @@ public class SliceVisualizer : MonoBehaviour {
 			return;
 
         var view = Camera.current.transform.worldToLocalMatrix;
-        var model = transform.localToWorldMatrix;
-        var voxelUvToLocal = viewSpaceBounds.VoxelUvToLocal;
+        var model = view.inverse;
+        var boundsUvToVoxelUv = viewSpaceBounds.ViewUvToVoxelUv;
+        var voxelUvToLocal = viewSpaceBounds.ViewUvToLocal;
         viewSpaceBounds.SetView (view);
 
 		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
-        sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, voxelUvToLocal);
-        sliceByPointMat.SetMatrix (shaderConstants.PROP_MODEL_MAT, model);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_UV_TO_VOXEL_UV, boundsUvToVoxelUv);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_UV_TO_LOCAL, voxelUvToLocal);
+        sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_MODEL, model);
 		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
         Graphics.DrawProcedural (MeshTopology.Points, depth);

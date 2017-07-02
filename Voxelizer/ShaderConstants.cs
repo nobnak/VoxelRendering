@@ -11,8 +11,9 @@ public class ShaderConstants {
 	public const string VOXEL_ROTATION_MAT = "_VoxelRotationMat";
 
 	public const string VERTEX_TO_DEPTH = "_VertexToDepth";
-    public const string UV_TO_VOXEL_MAT = "_UVToVoxelMat";
-	public const string MODEL_MAT = "_ModelMat";
+    public const string BOUNDS_UV_TO_VOXEL_UV = "_BoundsUvToVoxelUv";
+    public const string BOUNDS_UV_TO_LOCAL_MAT = "_BoundsUVToLocal";
+    public const string BOUNDS_MODEL = "_BoundsModel";
 
 	public readonly int PROP_VOXEL_SIZE;
 	public readonly int PROP_VOXEL_COLOR_TEX;
@@ -20,8 +21,9 @@ public class ShaderConstants {
 	public readonly int PROP_VOXEL_ROTATION_MAT;
 
 	public readonly int PROP_VERTEX_TO_DEPTH;
-    public readonly int PROP_UV_TO_VOXEL_MAT;
-	public readonly int PROP_MODEL_MAT;
+    public readonly int PROP_BOUNDS_UV_TO_VOXEL_UV;
+    public readonly int PROP_BOUNDS_UV_TO_LOCAL;
+	public readonly int PROP_BOUNDS_MODEL;
 
 	static ShaderConstants instance;
 
@@ -36,7 +38,8 @@ public class ShaderConstants {
 		PROP_VOXEL_ROTATION_MAT = Shader.PropertyToID (VOXEL_ROTATION_MAT);
 
 		PROP_VERTEX_TO_DEPTH = Shader.PropertyToID (VERTEX_TO_DEPTH);
-        PROP_UV_TO_VOXEL_MAT = Shader.PropertyToID (UV_TO_VOXEL_MAT);
-		PROP_MODEL_MAT = Shader.PropertyToID (MODEL_MAT);
+        PROP_BOUNDS_UV_TO_VOXEL_UV = Shader.PropertyToID (BOUNDS_UV_TO_VOXEL_UV);
+        PROP_BOUNDS_UV_TO_LOCAL = Shader.PropertyToID (BOUNDS_UV_TO_LOCAL_MAT);
+		PROP_BOUNDS_MODEL = Shader.PropertyToID (BOUNDS_MODEL);
 	}
 }

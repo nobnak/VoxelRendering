@@ -34,18 +34,24 @@
 
 			float _VertexToDepth;
 
-			float4x4 _UVToVoxelMat;
-			float4x4 _ModelMat;
+            float4x4 _BoundsUvToVoxelUv;
+			float4x4 _BoundsUVToLocal;
+			float4x4 _BoundsModel;
 
-			float4 UVWToWorldPosition(float3 uvw) {
+			float4 BoundsUVToWorldPosition(float3 uvw) {
 				float4 uv = float4(uvw.xy, uvw.z, 1);
-				float3 localPos = mul(_UVToVoxelMat, uv).xyz;
-				return float4(mul(_ModelMat, float4(localPos, 1)).xyz, 1);
+				float3 localPos = mul(_BoundsUVToLocal, uv).xyz;
+				return float4(mul(_BoundsModel, float4(localPos, 1)).xyz, 1);
 			}
+            float3 BoundsUVToVoxelUV(float3 boundsUv) {
+                return mul(_BoundsUvToVoxelUv, float4(boundsUv, 1)).xyz;
+            }
 
 			gsin vert (appdata v) {
+                float w = saturate(1.0 - v.vid * _VertexToDepth) + _DepthTexelOffset * _VertexToDepth;
+
 				gsin o;
-				o.w = (v.vid + _DepthTexelOffset) * _VertexToDepth;
+                o.w = w;
 				return o;
 			}
 
@@ -60,8 +66,8 @@
 				for (uint i = 0; i < 6; i++) {
 					uint j = INDICES[i];
 					float3 uv = float3(UV[j], w);
-					float4 worldPos = UVWToWorldPosition(uv);
-					o.uv = uv;
+					float4 worldPos = BoundsUVToWorldPosition(uv);
+					o.uv = BoundsUVToVoxelUV(uv);
 					o.vertex = mul(UNITY_MATRIX_VP, float4(worldPos.xyz, 1));
 					output.Append(o);
 
