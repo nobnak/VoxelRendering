@@ -34,9 +34,10 @@ public class SliceVisualizer : MonoBehaviour {
 		if (!IsInitialized)
 			return;
 
-        var voxelUvToLocal = viewSpaceBounds.VoxelUvToLocal;
+        var view = Camera.current.transform.worldToLocalMatrix;
         var model = transform.localToWorldMatrix;
-        viewSpaceBounds.SetView (Camera.current.transform.worldToLocalMatrix);
+        var voxelUvToLocal = viewSpaceBounds.VoxelUvToLocal;
+        viewSpaceBounds.SetView (view);
 
 		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
         sliceByPointMat.SetMatrix (shaderConstants.PROP_UV_TO_VOXEL_MAT, voxelUvToLocal);
