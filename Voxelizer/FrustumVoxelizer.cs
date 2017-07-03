@@ -16,12 +16,9 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 	public int prefferedVoxelResolution = 512;
 
-	public ComputeShader clearCompute;
-    public ComputeShader mixerCompute;
+    public ComputeShaderLinker csLinker;
 	public Shader voxelShader;
 
-	VoxelTextureCleaner cleaner;
-    VoxelTextureMixer mixer;
 	TransformVoxelBounds voxelBounds;
 
     TriadVoxelizer triad;
@@ -33,9 +30,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 		voxelBounds.Changed += (obj) => {
 			VoxelBoundsOnChange.Invoke (obj);
 		};
-		cleaner = new VoxelTextureCleaner (clearCompute, 0, ShaderConstants.RESULT);
-        mixer = new VoxelTextureMixer (mixerCompute);
-        triad = new TriadVoxelizer (voxelShader, cleaner, mixer, voxelBounds, prefferedVoxelResolution);
+        triad = new TriadVoxelizer (voxelShader, voxelBounds, prefferedVoxelResolution);
 
 		Init ();
 	}

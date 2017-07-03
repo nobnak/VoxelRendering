@@ -26,11 +26,8 @@ public class TriadVoxelizer : System.IDisposable {
     VoxelTexture[] colorTextures;
     VoxelTexture resultTex;
 
-    public TriadVoxelizer(Shader voxelizer, VoxelTextureCleaner cleaner, VoxelTextureMixer mixer,
-        AbstractVoxelBounds voxelBounds, int prefferedResolution) {
+    public TriadVoxelizer(Shader voxelizer, AbstractVoxelBounds voxelBounds, int prefferedResolution) {
         this.voxelizer = voxelizer;
-        this.cleaner = cleaner;
-        this.mixer = mixer;
         
 		this.shaderConstants = ShaderConstants.Instance;
 
@@ -63,12 +60,12 @@ public class TriadVoxelizer : System.IDisposable {
             var colorTex = colorTextures [i];
             var dir = DIRECTIONS [i];
             colorTex.SetResolution(prefferedResolution);
-            cleaner.Clear (colorTex.Texture);
+            ComputeShaderLinker.Clear (colorTex.Texture);
             Render(colorTex, dir);
         }
 
-        cleaner.Clear (resultTex.Texture);
-        mixer.Mix (resultTex.Texture,
+        ComputeShaderLinker.Clear (resultTex.Texture);
+        ComputeShaderLinker.Mix (resultTex.Texture,
             this [VoxelCameraDirection.DirectionEnum.LookRight].Texture,
             this [VoxelCameraDirection.DirectionEnum.LookUp].Texture,
             this [VoxelCameraDirection.DirectionEnum.LookForward].Texture);
