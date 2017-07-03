@@ -7,8 +7,6 @@ using Gist.Extensions.AABB;
 [ExecuteInEditMode]
 public class SliceVisualizer : MonoBehaviour {
 
-	public int depth = 64;
-
 	[SerializeField]
 	Material sliceByPointMat;
     [SerializeField]
@@ -36,13 +34,15 @@ public class SliceVisualizer : MonoBehaviour {
 		if (!IsInitialized)
 			return;
 
+        var depth = voxelTex.width;
+
         var view = Camera.current.transform.worldToLocalMatrix;
         var model = view.inverse;
         var boundsUvToVoxelUv = viewSpaceBounds.ViewUvToVoxelUv;
         var voxelUvToLocal = viewSpaceBounds.ViewUvToLocal;
         viewSpaceBounds.SetView (view);
 
-		sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
+        sliceByPointMat.SetFloat (shaderConstants.PROP_VERTEX_TO_DEPTH, 1f / depth);
         sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_UV_TO_VOXEL_UV, boundsUvToVoxelUv);
         sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_UV_TO_LOCAL, voxelUvToLocal);
         sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_MODEL, model);
@@ -59,9 +59,8 @@ public class SliceVisualizer : MonoBehaviour {
     }
 	#endregion
 
-	public void SetTexture(Texture tex) {
+	public void UpdateVoxelTexture(Texture tex) {
 		this.voxelTex = tex;
-        this.depth = tex.width;
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
 		this.voxelBounds = voxelBounds;

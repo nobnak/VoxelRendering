@@ -7,7 +7,7 @@ using Gist;
 public class FrustumVoxelizer : MonoBehaviour {
 	public const float NEAR_DISTANCE = 10f;
 
-	public TextureEvent OnCreateVoxelTexture;
+	public TextureEvent OnUpdateVoxelTexture;
 	public VoxelBoundsEvent VoxelBoundsOnChange;
 	
     public VoxelCameraDirection.DirectionEnum cameraDirectionMode;
@@ -42,8 +42,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 	void Update() {
 		Init ();
         triad.Update (prefferedVoxelResolution);
-        //OnCreateVoxelTexture.Invoke (triad [cameraDirectionMode].Texture);
-        OnCreateVoxelTexture.Invoke (triad.ResultTexture.Texture);
+        OnUpdateVoxelTexture.Invoke (triad.ResultTexture.Texture);
 	}
 	void OnDrawGizmos() {
 		if (!isActiveAndEnabled)
