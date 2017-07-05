@@ -30,7 +30,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 		voxelBounds.Changed += (obj) => {
 			VoxelBoundsOnChange.Invoke (obj);
 		};
-        triad = new TriadVoxelizer (voxelShader, voxelBounds, prefferedVoxelResolution);
+        triad = new TriadVoxelizer (csLinker, voxelShader, voxelBounds, prefferedVoxelResolution);
 
 		Init ();
 	}

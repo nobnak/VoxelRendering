@@ -14,9 +14,10 @@ public class SliceVisualizer : MonoBehaviour {
     [SerializeField]
     Color voxelColor = Color.green;
     [SerializeField]
-    Camera viewCamera;
+    ComputeShaderLinker csLinker;
 
 	Texture voxelTex;
+    VoxelTexture accumulatedTex;
 	AbstractVoxelBounds voxelBounds;
 	ShaderConstants shaderConstants;
     ViewSpaceBounds viewSpaceBounds;
@@ -34,7 +35,7 @@ public class SliceVisualizer : MonoBehaviour {
 		if (!IsInitialized)
 			return;
 
-        var depth = voxelTex.width;
+        var depth = 2 * voxelTex.width;
 
         var view = Camera.current.transform.worldToLocalMatrix;
         var model = view.inverse;
@@ -51,7 +52,7 @@ public class SliceVisualizer : MonoBehaviour {
         Graphics.DrawProcedural (MeshTopology.Points, depth);
 	}
     void OnDrawGizmos() {
-        if (!IsInitialized || voxelBounds == null)
+        if (!IsInitialized)
             return;
         
         viewSpaceBounds.SetView (Camera.current.transform.worldToLocalMatrix);
@@ -61,11 +62,26 @@ public class SliceVisualizer : MonoBehaviour {
 
 	public void UpdateVoxelTexture(Texture tex) {
 		this.voxelTex = tex;
+        PrepareAccumTex (tex.width);
+
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
 		this.voxelBounds = voxelBounds;
 	}
 	public bool IsInitialized {
-		get { return voxelTex != null && voxelBounds != null && isActiveAndEnabled; }
+        get { 
+            return voxelTex != null
+            && voxelBounds != null
+            && accumulatedTex != null
+            && isActiveAndEnabled; 
+        }
 	}
+
+    void PrepareAccumTex (int resolution) {
+        if (accumulatedTex == null) {
+            accumulatedTex = new VoxelTexture (resolution, RenderTextureFormat.ARGB32);
+            csLinker.Cleaner.Clear (accumulatedTex.Texture);
+        }
+        accumulatedTex.SetResolution (resolution);
+    }
 }
