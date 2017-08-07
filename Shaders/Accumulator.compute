@@ -1,0 +1,14 @@
+﻿#pragma kernel CSMain
+
+Texture3D<float4> SrcTex;
+RWTexture3D<float4> ResultTex;
+
+[numthreads(8,8,8)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+	float4 cres = ResultTex[id.xyz];
+	float4 csrc = SrcTex[id.xyz];
+
+	cres = lerp(cres, csrc, csrc.a);
+
+	ResultTex[id.xyz] = cres;
+}

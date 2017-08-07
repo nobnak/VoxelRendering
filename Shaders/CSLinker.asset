@@ -14,3 +14,5 @@ MonoBehaviour:
   clearComputeShader: {fileID: 7200000, guid: 74afd4d0a63e22a41b57c5508f64788b, type: 3}
   mixerComputeShader: {fileID: 7200000, guid: ae881e9775adfa14591030888058395d, type: 3}
   stepComputeShader: {fileID: 7200000, guid: ca137b0941c5f9b49b673e16df793a57, type: 3}
+  accumulateComputeShader: {fileID: 7200000, guid: 1630a97f48c99e0489e48a28cbf1813e,
+    type: 3}

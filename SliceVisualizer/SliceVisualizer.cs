@@ -60,7 +60,7 @@ public class SliceVisualizer : MonoBehaviour {
     }
 	#endregion
 
-	public void UpdateVoxelTexture(Texture tex) {
+    public void UpdateVoxelTexture(RenderTexture tex) {
 		this.voxelTex = tex;
         PrepareAccumTex (tex.width);
 
