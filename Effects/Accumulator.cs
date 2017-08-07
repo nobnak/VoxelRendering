@@ -8,16 +8,21 @@ public class Accumulator : MonoBehaviour {
 
     [SerializeField]
     ComputeShaderLinker csLinker;
+    [SerializeField]
+    float dissipation = 0.1f;
+    [SerializeField]
+    float emission = 1f;
 
     VoxelTexture resultTex;
 
     void OnEnable() {
-        resultTex = new VoxelTexture (0, RenderTextureFormat.ARGB32);
+        resultTex = new VoxelTexture (0, RenderTextureFormat.ARGBHalf, FilterMode.Point, TextureWrapMode.Clamp,
+            RenderTextureReadWrite.Linear);
     }
 
     public void UpdateVoxelTexture(RenderTexture voxelTex) {
         resultTex.SetResolution (voxelTex.width);
-        csLinker.Accumulator.Accumulate (voxelTex, resultTex.Texture);
+        csLinker.Accumulator.Accumulate (voxelTex, resultTex.Texture, dissipation, emission);
         NotifyOnUpdateTexture ();
     }
 

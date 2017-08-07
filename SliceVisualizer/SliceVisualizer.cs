@@ -17,7 +17,6 @@ public class SliceVisualizer : MonoBehaviour {
     ComputeShaderLinker csLinker;
 
 	Texture voxelTex;
-    VoxelTexture accumulatedTex;
 	AbstractVoxelBounds voxelBounds;
 	ShaderConstants shaderConstants;
     ViewSpaceBounds viewSpaceBounds;
@@ -62,7 +61,6 @@ public class SliceVisualizer : MonoBehaviour {
 
     public void UpdateVoxelTexture(RenderTexture tex) {
 		this.voxelTex = tex;
-        PrepareAccumTex (tex.width);
 
 	}
 	public void Set(AbstractVoxelBounds voxelBounds) {
@@ -72,16 +70,7 @@ public class SliceVisualizer : MonoBehaviour {
         get { 
             return voxelTex != null
             && voxelBounds != null
-            && accumulatedTex != null
             && isActiveAndEnabled; 
         }
 	}
-
-    void PrepareAccumTex (int resolution) {
-        if (accumulatedTex == null) {
-            accumulatedTex = new VoxelTexture (resolution, RenderTextureFormat.ARGB32);
-            csLinker.Cleaner.Clear (accumulatedTex.Texture);
-        }
-        accumulatedTex.SetResolution (resolution);
-    }
 }

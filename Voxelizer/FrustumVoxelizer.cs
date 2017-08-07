@@ -22,7 +22,6 @@ public class FrustumVoxelizer : MonoBehaviour {
 	TransformVoxelBounds voxelBounds;
 
     TriadVoxelizer triad;
-    VoxelTexture result;
 
 	#region Unity
 	void OnEnable() {

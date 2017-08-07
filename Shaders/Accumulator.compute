@@ -1,5 +1,9 @@
 ﻿#pragma kernel CSMain
 
+float Dt;
+float Dissipation;
+float Emission;
+
 Texture3D<float4> SrcTex;
 RWTexture3D<float4> ResultTex;
 
@@ -8,7 +12,8 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
 	float4 cres = ResultTex[id.xyz];
 	float4 csrc = SrcTex[id.xyz];
 
-	cres = lerp(cres, csrc, csrc.a);
+	cres = float4(cres.xyz, (1.0 - Dissipation * Dt) * cres.a);
+	cres = lerp(cres, csrc, csrc.w * Emission);
 
 	ResultTex[id.xyz] = cres;
 }
