@@ -23,6 +23,7 @@ public class FrustumVoxelizer : MonoBehaviour {
 
 	#region Unity
 	void OnEnable() {
+        QualitySettings.antiAliasing = 0;
 		voxelBounds = new TransformVoxelBounds (transform);
 		voxelBounds.Changed += (obj) => {
 			VoxelBoundsOnChange.Invoke (obj);
