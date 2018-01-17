@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using nobnak.Gist;
 using UnityEngine;
-using Gist;
 
 [ExecuteInEditMode]
 public class TriadVoxelizer : System.IDisposable {

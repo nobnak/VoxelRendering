@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using nobnak.Gist;
 using UnityEngine;
-using Gist;
-using Gist.Extensions.AABB;
 
 [ExecuteInEditMode]
 public class SliceVisualizer : MonoBehaviour {

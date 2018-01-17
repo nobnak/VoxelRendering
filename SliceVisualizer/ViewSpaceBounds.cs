@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using nobnak.Gist;
+using nobnak.Gist.Extensions.AABB;
 using UnityEngine;
-using Gist;
-using Gist.Extensions.AABB;
 
 public class ViewSpaceBounds {
     public Matrix4x4 VoxelModel { get; set; }
