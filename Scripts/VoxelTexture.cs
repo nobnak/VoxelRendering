@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+using nobnak.Gist.Extensions.Int;
 using UnityEngine;
 
 public class VoxelTexture : System.IDisposable {
