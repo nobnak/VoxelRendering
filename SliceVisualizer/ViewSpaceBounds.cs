@@ -1,13 +1,14 @@
-﻿using nobnak.Gist;
+using nobnak.Gist;
 using nobnak.Gist.Extensions.AABB;
+using nobnak.Gist.Primitive;
 using UnityEngine;
 
 public class ViewSpaceBounds {
     public Matrix4x4 VoxelModel { get; set; }
     public Matrix4x4 View { get; set; }
 
-    public Bounds LocalBounds { get; private set; }
-    public Bounds ViewBounds { get; private set; }
+    public FastBounds LocalBounds { get; private set; }
+    public FastBounds ViewBounds { get; private set; }
 
     public Matrix4x4 VoxelUvToLocal { get; private set; }
     public Matrix4x4 ViewUvToLocal { get; private set; }
@@ -39,9 +40,9 @@ public class ViewSpaceBounds {
         Gizmos.matrix = Matrix4x4.identity;
     }
 
-    static Matrix4x4 CalculateViewUvToViewLocal (Bounds viewBounds) {
-        var size = viewBounds.size;
-        var min = viewBounds.min;
+    static Matrix4x4 CalculateViewUvToViewLocal (FastBounds viewBounds) {
+        var size = viewBounds.Size;
+        var min = viewBounds.Min;
         var m = Matrix4x4.zero;
         m [0] = size.x;
         m [12] = min.x;
