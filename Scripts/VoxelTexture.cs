@@ -51,7 +51,7 @@ public class VoxelTexture : System.IDisposable {
 		set { SetResolution (value); } 
 	}
 	public void SetResolution(int prefferedResolution, bool force = false) {
-		var nextResolution = Mathf.Max(MINIMAL_RESOLUTION, prefferedResolution).SmallestPowerOfTwoGreaterThan ();
+		var nextResolution = Mathf.Max(MINIMAL_RESOLUTION, prefferedResolution).Po2 ();
 		if (force || nextResolution != CurrentResolution) {
 			textureIsValid = false;
 			currentResolution = nextResolution;
