@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,8 +6,8 @@ using UnityEngine;
 public class Accumulator : MonoBehaviour {
     public RenderTextureEvent OnUpdateTexture;
 
-    [SerializeField]
-    ComputeShaderLinker csLinker;
+	[SerializeField]
+	ComputeShaderLinker csLinker = null;
     [SerializeField]
     float dissipation = 0.1f;
     [SerializeField]

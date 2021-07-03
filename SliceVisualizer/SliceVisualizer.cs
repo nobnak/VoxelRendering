@@ -1,11 +1,11 @@
-﻿using nobnak.Gist;
+using nobnak.Gist;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class SliceVisualizer : MonoBehaviour {
 
 	[SerializeField]
-	Material sliceByPointMat;
+	Material sliceByPointMat = null;
     [SerializeField]
     Color boundColor = Color.green;
     [SerializeField]
@@ -45,7 +45,7 @@ public class SliceVisualizer : MonoBehaviour {
         sliceByPointMat.SetMatrix (shaderConstants.PROP_BOUNDS_MODEL, model);
 		sliceByPointMat.SetTexture (shaderConstants.PROP_VOXEL_COLOR_TEX, voxelTex);
 		sliceByPointMat.SetPass (0);
-        Graphics.DrawProcedural (MeshTopology.Points, depth);
+        Graphics.DrawProceduralNow (MeshTopology.Points, depth);
 	}
     void OnDrawGizmos() {
         if (!IsInitialized)
